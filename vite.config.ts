@@ -7,6 +7,7 @@ import process from "node:process";
 import type { Plugin } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
+const rootDir = import.meta.dirname;
 
 /**
  * pdf.js loads CMaps, standard fonts, ICC profiles and wasm decoders by URL at run time.
@@ -22,7 +23,7 @@ function pdfjsAssets(): Plugin {
     },
     writeBundle: () => {
       for (const dir of ["cmaps", "standard_fonts", "iccs", "wasm"]) {
-        cpSync(path.resolve(__dirname, "node_modules/pdfjs-dist", dir), path.join(outDir, "pdfjs", dir), { recursive: true });
+        cpSync(path.resolve(rootDir, "node_modules/pdfjs-dist", dir), path.join(outDir, "pdfjs", dir), { recursive: true });
       }
     },
   };
@@ -32,7 +33,7 @@ function pdfjsAssets(): Plugin {
 export default defineConfig(() => ({
   plugins: [react(), tailwindcss(), pdfjsAssets()],
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: { "@": path.resolve(rootDir, "./src") },
   },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
