@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/10-06-mosaic-mvp/design.md", "reason": "Shared stack, Tauri command contracts, document model, mosaic algorithm, UI layout"}
+{"file": ".trellis/tasks/10-06-mosaic-mvp/research/reference-repos.md", "reason": "Reference mechanisms from ImagEdit and CoverUP"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend conventions index (not established; update after app-shell)"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend conventions index (not established; update after app-shell)"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Frontend-Rust IPC boundary"}
