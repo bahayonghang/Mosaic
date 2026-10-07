@@ -105,7 +105,10 @@ impl Scanner {
 /// Expand files and directories (recursively) into supported files.
 /// Explicit files keep their given order; directory contents follow, sorted by path.
 pub fn scan(paths: &[String]) -> ScanResult {
-    let mut scanner = Scanner { result: ScanResult::default(), seen: HashSet::new() };
+    let mut scanner = Scanner {
+        result: ScanResult::default(),
+        seen: HashSet::new(),
+    };
     let (dirs, files): (Vec<&Path>, Vec<&Path>) =
         paths.iter().map(Path::new).partition(|p| p.is_dir());
     for file in files {
