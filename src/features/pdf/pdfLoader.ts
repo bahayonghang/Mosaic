@@ -1,29 +1,38 @@
-import {
-  getDocument,
-  GlobalWorkerOptions,
-  type PDFDocumentProxy,
-} from "pdfjs-dist";
-import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { PageState } from "@/store/types";
 import { releasePages } from "./pageCache";
 import { pageGeometry } from "./pageGeometry";
 
-GlobalWorkerOptions.workerSrc = workerUrl;
+/**
+ * CMaps, fonts, ICC profiles and wasm decoders.
+ * Dev serves those directories from /node_modules/pdfjs-dist/; the build copies them to dist/pdfjs/.
+ * The worker is always /pdfjs/pdf.worker.min.mjs: a prebuilt 1.2 MB file, not a bundled chunk.
+ */
+const ASSET_ROOT = import.meta.env.DEV ? "/node_modules/pdfjs-dist/" : "/pdfjs/";
+const WORKER_SRC = "/pdfjs/pdf.worker.min.mjs";
 
-/** CMaps, fonts, ICC profiles and wasm decoders; see the pdfjsAssets plugin in vite.config.ts. */
-const ASSETS = import.meta.env.DEV ? "/node_modules/pdfjs-dist/" : "/pdfjs/";
+let pdfjsPromise: Promise<typeof import("pdfjs-dist")> | undefined;
+
+function loadPdfjs() {
+  pdfjsPromise ??= import("pdfjs-dist").then((pdfjs) => {
+    pdfjs.GlobalWorkerOptions.workerSrc = WORKER_SRC;
+    return pdfjs;
+  });
+  return pdfjsPromise;
+}
 
 // Open documents, outside the store (not serializable).
 const handles = new Map<string, PDFDocumentProxy>();
 
 export async function openPdf(bytes: Uint8Array): Promise<PDFDocumentProxy> {
+  const { getDocument } = await loadPdfjs();
   try {
     return await getDocument({
       data: bytes,
-      cMapUrl: ASSETS + "cmaps/",
-      standardFontDataUrl: ASSETS + "standard_fonts/",
-      iccUrl: ASSETS + "iccs/",
-      wasmUrl: ASSETS + "wasm/",
+      cMapUrl: ASSET_ROOT + "cmaps/",
+      standardFontDataUrl: ASSET_ROOT + "standard_fonts/",
+      iccUrl: ASSET_ROOT + "iccs/",
+      wasmUrl: ASSET_ROOT + "wasm/",
     }).promise;
   } catch (e) {
     if (e instanceof Error && e.name === "PasswordException")
