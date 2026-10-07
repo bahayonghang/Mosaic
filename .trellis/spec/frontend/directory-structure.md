@@ -44,6 +44,17 @@ src/features/workspace/
   ResetButton.tsx        toolbar reset button + confirmation AlertDialog
 ```
 
+## Settings (established by task `10-07-settings-and-about`, 2026-10-07)
+
+```
+src/features/settings/
+  SettingsMenu.tsx       toolbar gear + dropdown; owns the open state of both dialogs
+  SettingsDialog.tsx     export suffix field, live example, validation
+  AboutDialog.tsx        name, version (`getVersion`), description, repository link (opener plugin)
+src/lib/exportName.ts    DEFAULT_EXPORT_SUFFIX, suffixError, suffixedName (shared with Rust rule)
+src/store/settingsStore.ts  persisted user settings
+```
+
 ## Rules
 
 - Import with the `@/` alias (maps to `src/`), not deep relative paths across folders.

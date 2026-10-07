@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { renderComposite } from "@/features/editor/pageRenderer";
 import { rasterize } from "@/features/pdf/pageCache";
 import { getPdf } from "@/features/pdf/pdfLoader";
+import { useSettingsStore } from "@/store/settingsStore";
 import type { MosaicDoc } from "@/store/types";
 
 const CHUNK = 8 * 1024 * 1024;
@@ -44,6 +45,8 @@ export async function exportPdf(
   const bytes = await out.save({ useObjectStreams: true });
   // WebView2 holds about 15 times the request body while it sends it, so large files go in chunks.
   let path = target ?? "";
+  // One value for every chunk of this file.
+  const suffix = encodeURIComponent(useSettingsStore.getState().exportSuffix);
   for (let offset = 0; offset < bytes.length; offset += CHUNK) {
     path = await invoke<string>(
       "write_export",
@@ -53,6 +56,7 @@ export async function exportPdf(
           "x-source": encodeURIComponent(doc.path),
           "x-target": encodeURIComponent(path),
           "x-offset": String(offset),
+          "x-suffix": suffix,
         },
       },
     );

@@ -37,15 +37,15 @@ The user sets the file name suffix for exports once, and every later export uses
 
 ## Acceptance Criteria
 
-- [ ] S1: the settings button shows with and without documents; the menu has "设置…" and "关于 Mosaic".
-- [ ] S2/S3: with the default suffix, export `证书.jpg` twice: the folder has `证书_打码版.jpg` and `证书_打码版_2.jpg`; the source bytes are unchanged (Rust unit test plus one manual check in `pnpm tauri dev`).
+- [x] S1: the settings button shows with and without documents; the menu has "设置…" and "关于 Mosaic".
+- [x] S2/S3: with the default suffix, export `证书.jpg` twice: the folder has `证书_打码版.jpg` and `证书_打码版_2.jpg`; the source bytes are unchanged (Rust unit test plus one manual check in `pnpm tauri dev`).
 - [ ] S4: set the suffix `-masked`, then "另存为…": the dialog proposes `证书-masked.jpg`; "全部导出" writes `<stem>-masked.<ext>` for every edited file, PDF included.
-- [ ] S5: Rust unit test: `target_name` with a custom suffix and n = 1, 3; the export command rejects an invalid suffix with an error and writes no file. Frontend unit test of the validator for each rule in S5.
+- [x] S5: Rust unit test: `target_name` with a custom suffix and n = 1, 3; the export command rejects an invalid suffix with an error and writes no file. Frontend unit test of the validator for each rule in S5.
 - [ ] S6: change the suffix, restart `pnpm tauri dev`: the dialog shows the changed value and the next export uses it.
-- [ ] S10/S11: type `a:b`: the reason shows and "保存" is disabled; "恢复默认" fills `_打码版`; "取消" keeps the old value.
-- [ ] S12: about shows `版本 0.1.0` before child 4 and `版本 0.2.0` after it (value from the app, not a hard-coded string).
+- [x] S10/S11: type `a:b`: the reason shows and "保存" is disabled; "恢复默认" fills `_打码版`; "取消" keeps the old value.
+- [x] S12: about shows `版本 0.1.0` before child 4 and `版本 0.2.0` after it (value from the app, not a hard-coded string).
 - [ ] S13: in `pnpm tauri dev`, the link opens the system browser; the Mosaic window keeps its content.
-- [ ] `pnpm typecheck && pnpm lint && pnpm test`, `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings`, and `cargo test --manifest-path src-tauri/Cargo.toml` pass.
+- [x] `pnpm typecheck && pnpm lint && pnpm test`, `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings`, and `cargo test --manifest-path src-tauri/Cargo.toml` pass.
 
 ## Out of Scope
 
@@ -53,3 +53,10 @@ The user sets the file name suffix for exports once, and every later export uses
 - Other settings fields.
 - Renaming files that were already exported.
 - Settings sync or import/export of settings.
+
+## Check results (2026-10-07)
+
+- S2/S3: verified by `cargo test` (`automatic_names_number_collisions_and_keep_the_source` writes `证书_打码版.jpg` and `证书_打码版_2.jpg` and keeps the source). The manual export in `pnpm tauri dev` was not run.
+- S4: "全部导出" and "导出" use the suffix (browser preview toast `已导出：exported-masked.png`). The "另存为…" default name was not checked in the system dialog (inferred from code: `defaultPath` uses the store suffix).
+- S6: persistence verified in the browser preview across reloads (`localStorage` `mosaic.settings`). Restart of `pnpm tauri dev` was not run.
+- S13: browser preview records `openUrl("https://github.com/bahayonghang/Mosaic")` and the page stays at `localhost:5180`. Opening the system browser from the Tauri window was not run.

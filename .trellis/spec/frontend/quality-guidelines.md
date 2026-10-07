@@ -28,7 +28,8 @@ All three must pass before a task is reported complete.
 - `src/dev/browserMocks.ts` is loaded only when `import.meta.env.DEV` is true and `window.__TAURI_INTERNALS__` is absent. It mocks the IPC (`read_file` reads through Vite `/@fs/`, `scan_paths` echoes the given paths) and exposes `window.__mosaic.useDocStore` for manual checks. Production builds never include it.
 - Tests use `mockWindows("main")` and `mockIPC` from `@tauri-apps/api/mocks` in `src/test/setup.ts`.
 - `src/test/setup.ts` also stubs `ImageData`; jsdom has no canvas, so canvas compositing is checked in a browser, not in vitest.
-- The browser mock answers `export_image` / `write_export` with a fixed path and stores the request body in `window.__lastExport`.
+- The browser mock answers `export_image` / `write_export` with `C:\mock\exported<suffix>.png` (suffix from `settingsStore`, because `mockIPC` drops request headers) and stores the request body in `window.__lastExport`. It answers `plugin:app|version` with the `package.json` version and records `plugin:opener|open_url` in `window.__lastOpenUrl`. `window.__mosaic` exposes `useDocStore` and `useSettingsStore`.
+- When the preview pane is hidden or covered, the page draws no frames (`requestAnimationFrame` never fires). Radix exit animations then never finish, so a closed dialog or menu stays in the DOM and blocks the next open. Reload the page between dialog checks in that state.
 - Vite serves modules changed by HMR with a `?t=` query, also after a page reload. To call app modules from the console, import the URL found in `performance.getEntriesByType("resource")`, otherwise a second module instance with a separate store is created.
 
 ## Canvas memory (established by task `10-06-pdf-mosaic`)

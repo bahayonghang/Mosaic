@@ -31,3 +31,9 @@
 
 - `docStore.clear()` empties `docs` and sets `currentId` to null. It does not release caches: `resetWorkspace()` in `src/features/workspace/resetWorkspace.ts` calls `releaseDocument(id)` for every doc first, then `clear()`, then `editorStore.reset()` (`tool: "rect"`, `sizes: {}`, `zoom: null`; `view` is cleared by the unmounting `Viewport`).
 - `editorStore.exporting` mirrors the module-level `busy` guard of `exportActions.exclusive()`. UI that must not run during an export (the reset button) reads this flag; the guard itself stays the module variable.
+
+## Settings (established by task `10-07-settings-and-about`, 2026-10-07)
+
+- `src/store/settingsStore.ts` holds user settings with the zustand `persist` middleware in `localStorage` key `mosaic.settings` (`version: 1`). Only `exportSuffix` exists; default `DEFAULT_EXPORT_SUFFIX` (`_打码版`) from `src/lib/exportName.ts`.
+- The store only holds valid, trimmed values: `setExportSuffix` ignores a value that fails `suffixError`, and `merge` replaces an invalid stored value with the default.
+- Exporters read `useSettingsStore.getState().exportSuffix` once per document export. The browser preview (`localhost:5180`) and the Tauri window keep separate `localStorage`.

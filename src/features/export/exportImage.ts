@@ -8,6 +8,7 @@ import {
   getImageBitmap,
   readImageBitmap,
 } from "@/features/import/loadDocument";
+import { useSettingsStore } from "@/store/settingsStore";
 import type { MosaicDoc, Rotation } from "@/store/types";
 
 /** PNG of the composite in the rotated orientation. The rotated copy is a CPU canvas released after encoding. */
@@ -52,6 +53,7 @@ export async function exportImage(
     headers: {
       "x-source": encodeURIComponent(doc.path),
       "x-target": encodeURIComponent(target ?? ""),
+      "x-suffix": encodeURIComponent(useSettingsStore.getState().exportSuffix),
     },
   });
 }

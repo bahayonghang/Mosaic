@@ -8,6 +8,14 @@
   "permissions": [
     "core:default",
     "core:window:allow-destroy",
-    "dialog:default"
+    "dialog:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://github.com/bahayonghang/Mosaic*"
+        }
+      ]
+    }
   ]
 }

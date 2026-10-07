@@ -3,6 +3,7 @@ import { save } from "@tauri-apps/plugin-dialog";
 import { toast } from "sonner";
 import { hasEdits, markExported, useDocStore } from "@/store/docStore";
 import { useEditorStore } from "@/store/editorStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import type { MosaicDoc } from "@/store/types";
 import { exporters } from "./exporters";
 
@@ -107,7 +108,7 @@ export function saveAsCurrent(): Promise<void> {
           );
     const target = await save({
       title: "另存为",
-      defaultPath: `${dir}${stem}_mosaic.${ext}`,
+      defaultPath: `${dir}${stem}${useSettingsStore.getState().exportSuffix}.${ext}`,
       filters,
     });
     const fresh = target && latest(doc.id);

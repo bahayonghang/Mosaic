@@ -1,7 +1,9 @@
 // Dev-only: lets the UI run in a plain browser (no Tauri runtime) for visual checks.
 // Loaded from main.tsx only when import.meta.env.DEV is true and Tauri is absent.
 import { mockIPC, mockWindows } from "@tauri-apps/api/mocks";
+import { version } from "../../package.json";
 import { useDocStore } from "@/store/docStore";
+import { useSettingsStore } from "@/store/settingsStore";
 
 mockWindows("main");
 mockIPC(async (cmd, args) => {
@@ -25,10 +27,16 @@ mockIPC(async (cmd, args) => {
   }
   if (cmd === "export_image" || cmd === "write_export") {
     // No file is written; the bytes are kept for inspection.
+    // mockIPC drops headers, so the suffix comes from the store the exporter read it from.
     Object.assign(window, { __lastExport: args });
-    return "C:\\mock\\exported_mosaic.png";
+    return `C:\\mock\\exported${useSettingsStore.getState().exportSuffix}.png`;
+  }
+  if (cmd === "plugin:app|version") return version;
+  if (cmd === "plugin:opener|open_url") {
+    Object.assign(window, { __lastOpenUrl: a.url });
+    return null;
   }
   return null;
 });
 
-Object.assign(window, { __mosaic: { useDocStore } });
+Object.assign(window, { __mosaic: { useDocStore, useSettingsStore } });
