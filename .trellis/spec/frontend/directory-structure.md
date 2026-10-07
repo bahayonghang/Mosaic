@@ -44,12 +44,13 @@ src/features/workspace/
   ResetButton.tsx        toolbar reset button + confirmation AlertDialog
 ```
 
-## Settings (established by task `10-07-settings-and-about`, 2026-10-07)
+## Settings (established by task `10-07-settings-and-about`, 2026-10-07; page shell by `10-07-settings-page`)
 
 ```
 src/features/settings/
-  SettingsMenu.tsx       toolbar gear + dropdown; owns the open state of both dialogs
-  SettingsDialog.tsx     export suffix field, live example, validation
+  SettingsMenu.tsx       toolbar gear + dropdown; owns the about dialog; settings opens via callback
+  SettingsPage.tsx       full-window settings; draft suffix, live example, validation
+  settingsPageOpen.ts    `[data-settings-page]` query for workspace listeners
   AboutDialog.tsx        name, version (`getVersion`), description, repository link (opener plugin)
 src/lib/exportName.ts    DEFAULT_EXPORT_SUFFIX, suffixError, suffixedName (shared with Rust rule)
 src/store/settingsStore.ts  persisted user settings

@@ -37,6 +37,7 @@
 - `src/store/settingsStore.ts` holds user settings with the zustand `persist` middleware in `localStorage` key `mosaic.settings` (`version: 1`). Only `exportSuffix` exists; default `DEFAULT_EXPORT_SUFFIX` (`_打码版`) from `src/lib/exportName.ts`.
 - The store only holds valid, trimmed values: `setExportSuffix` ignores a value that fails `suffixError`, and `merge` replaces an invalid stored value with the default.
 - Exporters read `useSettingsStore.getState().exportSuffix` once per document export. The browser preview (`localhost:5180`) and the Tauri window keep separate `localStorage`.
+- Whether the settings page is open is `useState` in `App`, not this store. The unsaved suffix is component state on `SettingsPage` and is dropped when the page unmounts.
 
 ## Folder tree (established by task `10-07-sidebar-folder-tree`, 2026-10-07)
 
