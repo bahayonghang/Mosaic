@@ -61,7 +61,7 @@ function DocRow({
         <span className="min-w-0 flex-1 truncate">{doc.name}</span>
         {unexported && (
           <span
-            aria-label="已打码未导出"
+            aria-label="已编辑未导出"
             className="size-1.5 shrink-0 rounded-full bg-signal"
           />
         )}
@@ -116,9 +116,9 @@ export function Sidebar() {
       >
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>移除已打码的文件？</AlertDialogTitle>
+            <AlertDialogTitle>移除已编辑的文件？</AlertDialogTitle>
             <AlertDialogDescription>
-              「{pending?.name}」的打码还没有导出，移除后打码内容会丢失。
+              「{pending?.name}」的编辑还没有导出，移除后编辑内容会丢失。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

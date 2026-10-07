@@ -18,7 +18,7 @@ export function CloseGuard() {
         <AlertDialogHeader>
           <AlertDialogTitle>退出 Mosaic？</AlertDialogTitle>
           <AlertDialogDescription>
-            有 {pending} 个文件已打码但未导出，确定退出吗？
+            有 {pending} 个文件已编辑但未导出，确定退出吗？
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
