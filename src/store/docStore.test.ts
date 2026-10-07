@@ -18,6 +18,13 @@ const file = (path: string) => ({
 describe("docStore", () => {
   beforeEach(() => useDocStore.setState({ docs: [], currentId: null }));
 
+  it("clear closes every document", () => {
+    useDocStore.getState().addDocs([file("C:\\a.jpg"), file("C:\\b.png")]);
+    useDocStore.getState().clear();
+    expect(useDocStore.getState().docs).toEqual([]);
+    expect(useDocStore.getState().currentId).toBeNull();
+  });
+
   it("selects the first file of each import", () => {
     useDocStore.getState().addDocs([file("C:\\a.jpg"), file("C:\\b.png")]);
     expect(useDocStore.getState().currentId).toBe(docIdOf("C:\\a.jpg"));

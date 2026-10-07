@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { save } from "@tauri-apps/plugin-dialog";
 import { toast } from "sonner";
 import { hasEdits, markExported, useDocStore } from "@/store/docStore";
+import { useEditorStore } from "@/store/editorStore";
 import type { MosaicDoc } from "@/store/types";
 import { exporters } from "./exporters";
 
@@ -51,10 +52,12 @@ function revealAction(path: string) {
 async function exclusive(task: () => Promise<void>) {
   if (busy) return;
   busy = true;
+  useEditorStore.getState().setExporting(true);
   try {
     await task();
   } finally {
     busy = false;
+    useEditorStore.getState().setExporting(false);
   }
 }
 

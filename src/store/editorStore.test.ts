@@ -30,3 +30,17 @@ describe("editorStore sizes", () => {
     });
   });
 });
+
+describe("editorStore reset", () => {
+  it("restores the initial tool, sizes, and zoom", () => {
+    const store = useEditorStore.getState();
+    store.setTool("brush");
+    store.setSizes(doc, { block: 20 });
+    store.setZoom(2);
+    useEditorStore.getState().reset();
+    const s = useEditorStore.getState();
+    expect(s.tool).toBe("rect");
+    expect(s.sizes).toEqual({});
+    expect(s.zoom).toBeNull();
+  });
+});

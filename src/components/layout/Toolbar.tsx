@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { BLOCK_MAX, BLOCK_MIN, RADIUS_MAX, RADIUS_MIN } from "@/features/editor/mosaicEngine";
 import { exportAll, exportCurrent, saveAsCurrent } from "@/features/export/exportActions";
 import { openFilesDialog, openFolderDialog } from "@/features/import/importActions";
+import { ResetButton } from "@/features/workspace/ResetButton";
 import { hasEdits, redo, rotate, undo, useCurrentDoc, useDocStore } from "@/store/docStore";
 import { defaultSizes, useEditorStore, useSizes, type Tool } from "@/store/editorStore";
 import { Kbd } from "./Kbd";
@@ -98,6 +99,7 @@ export function Toolbar() {
             打开文件夹
           </Button>
         </Tip>
+        <ResetButton />
       </div>
 
       <Separator orientation="vertical" className="h-5!" />

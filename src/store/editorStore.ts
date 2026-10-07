@@ -22,12 +22,17 @@ interface EditorState {
   /** Viewport scale (1 = 100 %), null when no image is shown. */
   zoom: number | null;
   view: ViewApi | null;
+  /** An export is running; set by `exportActions`. */
+  exporting: boolean;
   setTool: (tool: Tool) => void;
   setSizes: (doc: MosaicDoc, patch: Partial<Sizes>) => void;
   /** Back to the defaults of shared design 3.4. */
   resetSizes: (doc: MosaicDoc) => void;
   setZoom: (zoom: number | null) => void;
   setView: (view: ViewApi | null) => void;
+  setExporting: (exporting: boolean) => void;
+  /** Initial tool, sizes, and zoom (workspace reset). `view` is cleared by the unmounting viewport. */
+  reset: () => void;
 }
 
 export function defaultSizes(doc: MosaicDoc): Sizes | undefined {
@@ -53,6 +58,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   sizes: {},
   zoom: null,
   view: null,
+  exporting: false,
   setTool: (tool) => set({ tool }),
   setSizes: (doc, patch) => {
     const current = sizesOf(get().sizes, doc);
@@ -67,6 +73,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }),
   setZoom: (zoom) => set({ zoom }),
   setView: (view) => set({ view }),
+  setExporting: (exporting) => set({ exporting }),
+  reset: () => set({ tool: "rect", sizes: {}, zoom: null }),
 }));
 
 export function useSizes(doc: MosaicDoc | undefined): Sizes | undefined {

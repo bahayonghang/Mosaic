@@ -36,6 +36,14 @@ src/features/export/
 src/store/editorStore.ts tool, per-document block and brush sizes, zoom, ViewApi
 ```
 
+## Workspace (established by task `10-07-workspace-reset`, 2026-10-07)
+
+```
+src/features/workspace/
+  resetWorkspace.ts      release all documents, clear docStore, reset editorStore
+  ResetButton.tsx        toolbar reset button + confirmation AlertDialog
+```
+
 ## Rules
 
 - Import with the `@/` alias (maps to `src/`), not deep relative paths across folders.

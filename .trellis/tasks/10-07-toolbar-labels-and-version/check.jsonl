@@ -1,0 +1,7 @@
+{"file": ".trellis/tasks/archive/2026-10/10-06-mosaic-mvp/design.md", "reason": "Shared document model (3.3), Tauri command contracts (3.2), UI layout and shortcut table (4)"}
+{"file": ".trellis/tasks/10-07-v0-2-0/prd.md", "reason": "Parent decisions V1-V4, toolbar order X1, width rule X2"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend conventions index"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "docStore/editorStore contracts, cache release rules"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Styling tokens, shadcn primitive rules, Chinese text, aria-label and tooltip rules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Validation commands, browser preview mocks"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Where new feature files go"}

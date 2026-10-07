@@ -26,3 +26,8 @@
 - `MosaicDoc.rotation?: 0 | 90 | 180 | 270` (clockwise, image documents only, absent = 0). `rotate(docId, 1 | -1)` changes it and increments `version`; it is not in undo/redo history and does nothing for a PDF.
 - Ops, `PageState.width/height`, `PageRenderer`, and the mosaic copies stay in unrotated source raster coordinates. Only `Viewport` (draw matrix, `toImage`, rect preview, fit/clamp size), the status bar size label, and `exportImage` (rotates the composite on a CPU canvas before PNG encoding) apply the rotation. The math lives in `src/features/editor/rotation.ts`.
 - `hasEdits(doc)` = ops or a non-zero rotation; it decides "can export", "export all", and `isUnexported`. `hasOps` means mosaic ops only.
+
+## Workspace reset (established by task `10-07-workspace-reset`, 2026-10-07)
+
+- `docStore.clear()` empties `docs` and sets `currentId` to null. It does not release caches: `resetWorkspace()` in `src/features/workspace/resetWorkspace.ts` calls `releaseDocument(id)` for every doc first, then `clear()`, then `editorStore.reset()` (`tool: "rect"`, `sizes: {}`, `zoom: null`; `view` is cleared by the unmounting `Viewport`).
+- `editorStore.exporting` mirrors the module-level `busy` guard of `exportActions.exclusive()`. UI that must not run during an export (the reset button) reads this flag; the guard itself stays the module variable.

@@ -33,6 +33,8 @@ interface DocState {
   addDocs: (files: NewDoc[]) => { added: number };
   select: (id: string) => void;
   remove: (id: string) => void;
+  /** Close every document. Cached bitmaps and PDF handles are released by the caller. */
+  clear: () => void;
   update: (
     id: string,
     patch: Partial<MosaicDoc> | ((doc: MosaicDoc) => Partial<MosaicDoc>),
@@ -81,6 +83,8 @@ export const useDocStore = create<DocState>((set, get) => ({
         currentId = (docs[index] ?? docs[index - 1])?.id ?? null;
       return { docs, currentId };
     }),
+
+  clear: () => set({ docs: [], currentId: null }),
 
   update: (id, patch) =>
     set((s) => ({
