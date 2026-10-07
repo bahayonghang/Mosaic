@@ -36,11 +36,11 @@ Make the editor toolbar easier to use: one click restores the default block and 
 
 ## Cross-Child Acceptance Criteria
 
-- [ ] X1. The toolbar order is: open file, open folder | rectangle, brush, hand | block size, brush size (brush tool only), restore default | undo, redo | rotate left, rotate right (image documents only) | export.
-- [ ] X2. The keyboard shortcut table in shared design 4 gets `H` (hand tool). Existing shortcuts keep their behavior.
-- [ ] X3. On a rotated image, the hand tool, `Space+drag`, `Ctrl+wheel`, `Ctrl+0`, and the status bar zoom buttons work the same as on an unrotated image.
-- [ ] X4. `pnpm typecheck && pnpm lint && pnpm test` and `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass.
-- [ ] X5. All new visible text is Chinese; icon-only buttons have a Chinese `aria-label` and a tooltip.
+- [x] X1. The toolbar order is: open file, open folder | rectangle, brush, hand | block size, brush size (brush tool only), restore default | undo, redo | rotate left, rotate right (image documents only) | export.
+- [x] X2. The keyboard shortcut table in shared design 4 gets `H` (hand tool). Existing shortcuts keep their behavior.
+- [x] X3. On a rotated image, the hand tool, `Space+drag`, `Ctrl+wheel`, `Ctrl+0`, and the status bar zoom buttons work the same as on an unrotated image.
+- [x] X4. `pnpm typecheck && pnpm lint && pnpm test` and `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass.
+- [x] X5. All new visible text is Chinese; icon-only buttons have a Chinese `aria-label` and a tooltip.
 
 ## Out of Scope
 

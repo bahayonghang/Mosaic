@@ -3,6 +3,12 @@ import { useEditorStore, useSizes } from "@/store/editorStore";
 import type { MosaicDoc } from "@/store/types";
 import type { Rect } from "./mosaicEngine";
 import {
+  fromRotated,
+  rotatedSize,
+  rotateRect,
+  rotationMatrix,
+} from "./rotation";
+import {
   clearActiveRenderer,
   PageRenderer,
   setActiveRenderer,
@@ -34,6 +40,7 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
   const page = doc.pages[doc.currentPage];
   const sizes = useSizes(doc)!;
   const tool = useEditorStore((s) => s.tool);
+  const rotation = doc.rotation ?? 0;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -63,11 +70,16 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
     el.style.transform = `translate(${p.x - d / 2}px, ${p.y - d / 2}px)`;
   };
   // Latest values for the long-lived event handlers below.
-  const live = useRef({ renderer, tool, sizes, docId: doc.id, space });
+  const live = useRef({ renderer, tool, sizes, docId: doc.id, space, rotation });
   useEffect(() => {
-    live.current = { renderer, tool, sizes, docId: doc.id, space };
+    live.current = { renderer, tool, sizes, docId: doc.id, space, rotation };
     updateBrushCursor();
   });
+
+  // A rotation changes the shown size; fit it to the window.
+  useEffect(() => {
+    handles.current?.fit();
+  }, [rotation]);
 
   // The shown page's renderer is the one export reuses; a new page fits to the window.
   useEffect(() => {
@@ -103,6 +115,8 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (!r) return;
       const { s, tx, ty } = t.current;
+      const rot = live.current.rotation;
+      const size = rotatedSize(r.width, r.height, rot);
       ctx.save();
       ctx.shadowColor = "rgb(0 0 0 / 0.16)";
       ctx.shadowBlur = 18 * dpr;
@@ -111,11 +125,19 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
       ctx.fillRect(
         Math.round(tx * dpr),
         Math.round(ty * dpr),
-        Math.round(r.width * s * dpr),
-        Math.round(r.height * s * dpr),
+        Math.round(size.w * s * dpr),
+        Math.round(size.h * s * dpr),
       );
       ctx.restore();
-      ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * tx, dpr * ty);
+      const [a, b, c, d, e, f] = rotationMatrix(r.width, r.height, rot);
+      ctx.setTransform(
+        dpr * s * a,
+        dpr * s * b,
+        dpr * s * c,
+        dpr * s * d,
+        dpr * (s * e + tx),
+        dpr * (s * f + ty),
+      );
       // Nearest-neighbor when zoomed in, so mosaic cells stay sharp.
       ctx.imageSmoothingEnabled = s < 1;
       ctx.imageSmoothingQuality = "high";
@@ -130,8 +152,9 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
       const r = live.current.renderer;
       const cur = { ...t.current, ...next };
       if (r) {
-        cur.tx = clampAxis(cur.tx, r.width * cur.s, container.clientWidth);
-        cur.ty = clampAxis(cur.ty, r.height * cur.s, container.clientHeight);
+        const size = rotatedSize(r.width, r.height, live.current.rotation);
+        cur.tx = clampAxis(cur.tx, size.w * cur.s, container.clientWidth);
+        cur.ty = clampAxis(cur.ty, size.h * cur.s, container.clientHeight);
       }
       t.current = cur;
       setZoom(cur.s);
@@ -140,9 +163,10 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
     const fit = () => {
       const r = live.current.renderer;
       if (!r) return;
+      const size = rotatedSize(r.width, r.height, live.current.rotation);
       const s = Math.min(
-        (container.clientWidth - 2 * PAD) / r.width,
-        (container.clientHeight - 2 * PAD) / r.height,
+        (container.clientWidth - 2 * PAD) / size.w,
+        (container.clientHeight - 2 * PAD) / size.h,
         1,
       );
       apply({ s: Math.max(MIN_ZOOM, s), fitted: true });
@@ -233,13 +257,21 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
   const toImage = (e: React.PointerEvent): Point => {
     const box = containerRef.current!.getBoundingClientRect();
     const { s, tx, ty } = t.current;
-    return [(e.clientX - box.left - tx) / s, (e.clientY - box.top - ty) / s];
+    const { renderer: r, rotation: rot } = live.current;
+    return fromRotated(
+      [(e.clientX - box.left - tx) / s, (e.clientY - box.top - ty) / s],
+      r.width,
+      r.height,
+      rot,
+    );
   };
 
-  const showRect = (r: Rect | null) => {
+  const showRect = (source: Rect | null) => {
     const el = rectRef.current!;
-    el.hidden = !r;
-    if (!r) return;
+    el.hidden = !source;
+    if (!source) return;
+    const { renderer: pr, rotation: rot } = live.current;
+    const r = rotateRect(source, pr.width, pr.height, rot);
     const { s, tx, ty } = t.current;
     el.style.transform = `translate(${tx + r.x * s}px, ${ty + r.y * s}px)`;
     el.style.width = `${r.w * s}px`;

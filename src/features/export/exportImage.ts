@@ -3,11 +3,28 @@ import {
   getActiveRenderer,
   renderComposite,
 } from "@/features/editor/pageRenderer";
+import { rotatedSize, rotationMatrix } from "@/features/editor/rotation";
 import {
   getImageBitmap,
   readImageBitmap,
 } from "@/features/import/loadDocument";
-import type { MosaicDoc } from "@/store/types";
+import type { MosaicDoc, Rotation } from "@/store/types";
+
+/** PNG of the composite in the rotated orientation. The rotated copy is a CPU canvas released after encoding. */
+async function encodePng(canvas: OffscreenCanvas, rotation: Rotation): Promise<Blob> {
+  if (rotation === 0) return canvas.convertToBlob({ type: "image/png" });
+  const { width: w, height: h } = canvas;
+  const size = rotatedSize(w, h, rotation);
+  const out = new OffscreenCanvas(size.w, size.h);
+  try {
+    const ctx = out.getContext("2d", { willReadFrequently: true })!;
+    ctx.setTransform(...rotationMatrix(w, h, rotation));
+    ctx.drawImage(canvas, 0, 0);
+    return await out.convertToBlob({ type: "image/png" });
+  } finally {
+    out.width = out.height = 0;
+  }
+}
 
 /** Composite -> PNG -> Rust, which re-encodes in the target format. Returns the written path. */
 export async function exportImage(
@@ -29,7 +46,7 @@ export async function exportImage(
       if (!cached) base.close();
     }
   }
-  const blob = await canvas.convertToBlob({ type: "image/png" });
+  const blob = await encodePng(canvas, doc.rotation ?? 0);
   const png = new Uint8Array(await blob.arrayBuffer());
   return invoke<string>("export_image", png, {
     headers: {

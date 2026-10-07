@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { save } from "@tauri-apps/plugin-dialog";
 import { toast } from "sonner";
-import { hasOps, markExported, useDocStore } from "@/store/docStore";
+import { hasEdits, markExported, useDocStore } from "@/store/docStore";
 import type { MosaicDoc } from "@/store/types";
 import { exporters } from "./exporters";
 
@@ -80,7 +80,7 @@ async function exportOne(doc: MosaicDoc, target?: string) {
 export function exportCurrent(): Promise<void> {
   return exclusive(async () => {
     const doc = currentDoc();
-    if (doc && hasOps(doc)) await exportOne(doc);
+    if (doc && hasEdits(doc)) await exportOne(doc);
   });
 }
 
@@ -88,7 +88,7 @@ export function exportCurrent(): Promise<void> {
 export function saveAsCurrent(): Promise<void> {
   return exclusive(async () => {
     const doc = currentDoc();
-    if (!doc || !hasOps(doc)) return;
+    if (!doc || !hasEdits(doc)) return;
     const dot = doc.name.lastIndexOf(".");
     const stem = dot > 0 ? doc.name.slice(0, dot) : doc.name;
     const ext = dot > 0 ? doc.name.slice(dot + 1).toLowerCase() : "";
@@ -115,7 +115,7 @@ export function saveAsCurrent(): Promise<void> {
 /** Export every edited document next to its source (E11). */
 export function exportAll(): Promise<void> {
   return exclusive(async () => {
-    const todo = useDocStore.getState().docs.filter(hasOps);
+    const todo = useDocStore.getState().docs.filter(hasEdits);
     if (todo.length === 0) return;
     const id = toast.loading(`正在导出 0 / ${todo.length}`);
     let ok = 0;

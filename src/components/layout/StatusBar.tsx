@@ -1,6 +1,7 @@
 import { Scan, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrentDoc } from "@/store/docStore";
+import { rotatedSize } from "@/features/editor/rotation";
 import { useEditorStore } from "@/store/editorStore";
 import { PageNav } from "./PageNav";
 
@@ -9,12 +10,14 @@ export function StatusBar() {
   const page = doc?.status === "ready" ? doc.pages[doc.currentPage] : undefined;
   const zoom = useEditorStore((s) => s.zoom);
   const view = useEditorStore((s) => s.view);
+  const size =
+    page && rotatedSize(page.width, page.height, doc?.rotation ?? 0);
 
   return (
     <footer className="flex h-7 shrink-0 items-center gap-3 border-t bg-chrome px-3 text-xs text-muted-foreground">
       <span className="tabular-nums">
         {page
-          ? `${page.width} × ${page.height}`
+          ? `${size!.w} × ${size!.h}`
           : doc
             ? doc.name
             : "未打开文件"}

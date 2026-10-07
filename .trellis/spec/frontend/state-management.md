@@ -20,3 +20,9 @@
 - `src/store/editorStore.ts` holds UI state that is not part of a document: `tool`, block and brush sizes per document id (absent = defaults from the page size via `sizesOf`), the viewport `zoom`, and `view` (zoom commands the status bar and shortcuts call). The viewport transform itself stays in a ref inside `Viewport.tsx`.
 - `tool` is `"rect" | "brush" | "hand"` (shortcuts `R`, `B`, `H`). Only `"rect"` and `"brush"` start a `ToolSession`; `Viewport` checks both values explicitly, so a new tool never falls through to the brush. The hand tool pans on left drag and zooms on the plain wheel; `Space+drag` and middle-button drag pan with every tool (task `10-07-hand-tool-and-size-reset`).
 - Restoring default sizes deletes `sizes[doc.id]` (`resetSizes`); `defaultSizes(doc)` is the only place that computes the defaults, used by `sizesOf` and the toolbar "恢复默认" disabled state.
+
+## Image rotation (established by task `10-07-image-rotation`, 2026-10-07)
+
+- `MosaicDoc.rotation?: 0 | 90 | 180 | 270` (clockwise, image documents only, absent = 0). `rotate(docId, 1 | -1)` changes it and increments `version`; it is not in undo/redo history and does nothing for a PDF.
+- Ops, `PageState.width/height`, `PageRenderer`, and the mosaic copies stay in unrotated source raster coordinates. Only `Viewport` (draw matrix, `toImage`, rect preview, fit/clamp size), the status bar size label, and `exportImage` (rotates the composite on a CPU canvas before PNG encoding) apply the rotation. The math lives in `src/features/editor/rotation.ts`.
+- `hasEdits(doc)` = ops or a non-zero rotation; it decides "can export", "export all", and `isUnexported`. `hasOps` means mosaic ops only.

@@ -26,10 +26,10 @@ The user restores the default block and brush sizes with one click, and pans and
 ## Acceptance Criteria
 
 - [x] R1-R3: open a 4000 x 3000 JPG: the button is disabled. Set block size 20 and brush size 120, click "恢复默认": the sliders show 40 and 100 (defaults for a 4000 px long side: block `clamp(round(4000 / 100), 8, 48)` = 40, radius `clamp(round(4000 / 40), 8, 200)` = 100) and the button becomes disabled again.
-- [x] R4: draw one rect with block 20, click "恢复默认": the rect keeps its 20 px cells; the zoom percent in the status bar does not change.
+- [ ] R4: draw one rect with block 20, click "恢复默认": the rect keeps its 20 px cells; the zoom percent in the status bar does not change. (inferred: not run; `resetSizes` only deletes `sizes[doc.id]`)
 - [x] H1: press `H`: the hand item is pressed; press `R`: the rectangle item is pressed.
 - [x] H2: with the hand tool, drag on the page: the page moves with the pointer, the op count stays the same (undo button stays disabled on a fresh document).
-- [x] H3: with the hand tool, wheel up over a point of the image: the zoom percent increases and the image point under the cursor stays under the cursor.
+- [ ] H3: with the hand tool, wheel up over a point of the image: the zoom percent increases and the image point under the cursor stays under the cursor. (zoom increase verified; cursor-point invariance inferred: the hand wheel calls the same `zoomAt` as `Ctrl+wheel`)
 - [x] H4: with the rectangle tool, the plain wheel scrolls the page vertically and does not change the zoom percent.
 - [x] Unit test (vitest): the reset action on `editorStore` removes the stored sizes of the document, and `sizesOf` then returns the defaults.
 - [x] `pnpm typecheck && pnpm lint && pnpm test` pass.

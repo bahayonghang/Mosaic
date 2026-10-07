@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { DocKind, MosaicDoc, MosaicOp, PageState } from "./types";
+import type { DocKind, MosaicDoc, MosaicOp, PageState, Rotation } from "./types";
 
 export interface NewDoc {
   path: string;
@@ -16,9 +16,14 @@ export function hasOps(doc: MosaicDoc): boolean {
   return doc.pages.some((p) => p.ops.length > 0);
 }
 
+/** Has mosaic ops or a rotation, so an export differs from the source. */
+export function hasEdits(doc: MosaicDoc): boolean {
+  return hasOps(doc) || (doc.rotation ?? 0) !== 0;
+}
+
 /** Edited since the last export (or never exported). */
 export function isUnexported(doc: MosaicDoc): boolean {
-  return hasOps(doc) && doc.version !== doc.exportedVersion;
+  return hasEdits(doc) && doc.version !== doc.exportedVersion;
 }
 
 interface DocState {
@@ -136,6 +141,18 @@ export function setPage(docId: string, index: number) {
   useDocStore.getState().update(docId, (d) => ({
     currentPage: Math.min(d.pages.length - 1, Math.max(0, index)),
   }));
+}
+
+/** Rotate an image document by 90 degrees: 1 clockwise, -1 counter-clockwise. Not in undo history. */
+export function rotate(docId: string, dir: 1 | -1) {
+  useDocStore.getState().update(docId, (d) =>
+    d.kind !== "image"
+      ? {}
+      : {
+          rotation: (((d.rotation ?? 0) + dir * 90 + 360) % 360) as Rotation,
+          version: d.version + 1,
+        },
+  );
 }
 
 /** Record a successful export of the state at `version`. */

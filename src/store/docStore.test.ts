@@ -1,8 +1,10 @@
 import {
   docIdOf,
+  hasEdits,
   isUnexported,
   pushOp,
   redo,
+  rotate,
   undo,
   useDocStore,
 } from "./docStore";
@@ -95,5 +97,35 @@ describe("docStore", () => {
         exportedVersion: 1,
       }),
     ).toBe(false);
+  });
+
+  it("rotates image documents in 90 degree steps as an edit", () => {
+    const id = docIdOf("C:\\a.jpg");
+    useDocStore.getState().addDocs([file("C:\\a.jpg")]);
+    useDocStore
+      .getState()
+      .update(id, { pages: [{ width: 10, height: 10, ops: [], redo: [] }] });
+    const doc = () => useDocStore.getState().docs[0];
+    rotate(id, -1);
+    expect(doc()).toMatchObject({ rotation: 270, version: 1 });
+    expect(hasEdits(doc())).toBe(true);
+    expect(isUnexported(doc())).toBe(true);
+    expect(doc().pages[0].redo).toEqual([]);
+    rotate(id, 1);
+    expect(doc()).toMatchObject({ rotation: 0, version: 2 });
+    expect(hasEdits(doc())).toBe(false);
+    expect(isUnexported(doc())).toBe(false);
+    for (let i = 0; i < 3; i++) rotate(id, 1);
+    expect(doc().rotation).toBe(270);
+  });
+
+  it("does not rotate PDF documents", () => {
+    const id = docIdOf("C:\\a.pdf");
+    useDocStore
+      .getState()
+      .addDocs([{ path: "C:\\a.pdf", name: "a.pdf", kind: "pdf" }]);
+    rotate(id, 1);
+    expect(useDocStore.getState().docs[0]).toMatchObject({ version: 0 });
+    expect(useDocStore.getState().docs[0].rotation).toBeUndefined();
   });
 });

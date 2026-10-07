@@ -1,5 +1,8 @@
 export type DocKind = "image" | "pdf";
 
+/** Clockwise degrees. */
+export type Rotation = 0 | 90 | 180 | 270;
+
 export type MosaicOp =
   | { type: "rect"; x: number; y: number; w: number; h: number; block: number }
   | { type: "stroke"; points: [number, number][]; radius: number; block: number };
@@ -23,6 +26,8 @@ export interface MosaicDoc {
   error?: string;
   pages: PageState[];
   currentPage: number;
+  /** Image only: clockwise view and export rotation; absent means 0. */
+  rotation?: Rotation;
   /** Increments on every op change. */
   version: number;
   /** `version` at the last successful export. */

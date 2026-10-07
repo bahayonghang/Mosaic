@@ -32,17 +32,17 @@ The user turns a sideways image upright in 90 degree steps, applies mosaic in th
 
 ## Acceptance Criteria
 
-- [ ] G1/G2: open a JPG: both rotate buttons show; open a PDF: neither shows.
-- [ ] G3/G5: on a 4000 x 3000 JPG, click "向右旋转": status bar shows `3000 × 4000`; click 3 more times: `4000 × 3000`.
-- [ ] G7: rotate a JPG 90 degrees right, drag a rect over a visible word: the mosaic covers the word on screen and in the export.
-- [ ] G8: draw a rect on an unrotated JPG, rotate left: the mosaic stays on the same content.
-- [ ] G9: rotate right, draw a rect, press `Ctrl+Z`: the rect disappears and the image stays rotated.
-- [ ] G10: open an unedited JPG, rotate right: the export button is enabled and the sidebar marker shows; close the window: the confirmation dialog shows. Rotate left back to 0: the export button is disabled and the marker clears.
-- [ ] G11: rotate right, export, rotate right again: the marker shows again.
-- [ ] G12: export a 400 x 300 PNG rotated 90 degrees right: the output is 300 x 400; the output pixel (0, 0) equals the source pixel (0, 299). Export with 180 and 270 degrees and check one corner pixel each.
-- [ ] G12: "另存为…" a rotated JPG as PNG: the PNG has the rotated orientation.
-- [ ] Unit tests (vitest): rotated size, point and rect mapping and its inverse for 0/90/180/270; `rotate` store action (cycle, version increment, no change for a PDF document); `hasEdits` / `isUnexported` with rotation and no ops.
-- [ ] `pnpm typecheck && pnpm lint && pnpm test` and `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass.
+- [x] G1/G2: open a JPG: both rotate buttons show; open a PDF: neither shows.
+- [x] G3/G5: on a 4000 x 3000 JPG, click "向右旋转": status bar shows `3000 × 4000`; click 3 more times: `4000 × 3000`.
+- [x] G7: rotate a JPG 90 degrees right, drag a rect over a visible word: the mosaic covers the word on screen and in the export.
+- [ ] G8: draw a rect on an unrotated JPG, rotate left: the mosaic stays on the same content. (inferred: not run; `rotate` does not touch `pages`)
+- [x] G9: rotate right, draw a rect, press `Ctrl+Z`: the rect disappears and the image stays rotated.
+- [ ] G10: open an unedited JPG, rotate right: the export button is enabled and the sidebar marker shows; close the window: the confirmation dialog shows. Rotate left back to 0: the export button is disabled and the marker clears. (verified in browser preview except the close dialog: needs the Tauri window; not run)
+- [x] G11: rotate right, export, rotate right again: the marker shows again.
+- [x] G12: export a 400 x 300 PNG rotated 90 degrees right: the output is 300 x 400; the output pixel (0, 0) equals the source pixel (0, 299). Export with 180 and 270 degrees and check one corner pixel each.
+- [ ] G12: "另存为…" a rotated JPG as PNG: the PNG has the rotated orientation. (inferred: not run; Save as uses the same `exportImage` path verified for 90/180/270)
+- [x] Unit tests (vitest): rotated size, point and rect mapping and its inverse for 0/90/180/270; `rotate` store action (cycle, version increment, no change for a PDF document); `hasEdits` / `isUnexported` with rotation and no ops.
+- [x] `pnpm typecheck && pnpm lint && pnpm test` and `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass.
 
 ## Out of Scope
 

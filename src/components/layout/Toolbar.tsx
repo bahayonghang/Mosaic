@@ -1,4 +1,4 @@
-import { Brush, ChevronDown, Download, FolderOpen, Hand, ImagePlus, Redo2, SquareDashed, Undo2 } from "lucide-react";
+import { Brush, ChevronDown, Download, FolderOpen, Hand, ImagePlus, Redo2, RotateCcw, RotateCw, SquareDashed, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { BLOCK_MAX, BLOCK_MIN, RADIUS_MAX, RADIUS_MIN } from "@/features/editor/mosaicEngine";
 import { exportAll, exportCurrent, saveAsCurrent } from "@/features/export/exportActions";
 import { openFilesDialog, openFolderDialog } from "@/features/import/importActions";
-import { hasOps, redo, undo, useCurrentDoc, useDocStore } from "@/store/docStore";
+import { hasEdits, redo, rotate, undo, useCurrentDoc, useDocStore } from "@/store/docStore";
 import { defaultSizes, useEditorStore, useSizes, type Tool } from "@/store/editorStore";
 import { Kbd } from "./Kbd";
 import { PixelMark } from "./PixelMark";
@@ -69,9 +69,9 @@ export function Toolbar() {
   const sizes = useSizes(doc);
   const tool = useEditorStore((s) => s.tool);
   const { setTool, setSizes, resetSizes } = useEditorStore.getState();
-  const anyEdited = useDocStore((s) => s.docs.some(hasOps));
+  const anyEdited = useDocStore((s) => s.docs.some(hasEdits));
   const noDoc = !doc || !page || !sizes;
-  const canExport = !!doc && hasOps(doc);
+  const canExport = !!doc && hasEdits(doc);
   const defaults = doc && defaultSizes(doc);
   const atDefaults =
     !!sizes && !!defaults && sizes.block === defaults.block && sizes.radius === defaults.radius;
@@ -185,6 +185,24 @@ export function Toolbar() {
           </Button>
         </Tip>
       </div>
+
+      {doc?.kind === "image" && page && (
+        <>
+          <Separator orientation="vertical" className="h-5!" />
+          <div className="flex items-center">
+            <Tip label="向左旋转">
+              <Button variant="ghost" size="icon-sm" onClick={() => rotate(doc.id, -1)} aria-label="向左旋转">
+                <RotateCcw />
+              </Button>
+            </Tip>
+            <Tip label="向右旋转">
+              <Button variant="ghost" size="icon-sm" onClick={() => rotate(doc.id, 1)} aria-label="向右旋转">
+                <RotateCw />
+              </Button>
+            </Tip>
+          </div>
+        </>
+      )}
 
       <div className="ml-auto flex items-center">
         <Tip label="导出到原文件旁" shortcut="Ctrl+S">
