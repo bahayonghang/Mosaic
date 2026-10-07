@@ -19,6 +19,7 @@
 - The shadcn CLI may write `import { cn } from "cn"` and add an npm package `cn`. Replace the import with `@/lib/utils` and remove the package (`pnpm remove cn`). Answer `n` when it asks to overwrite `button.tsx`.
 - Dialog close buttons from shadcn carry the English screen-reader text "Close"; dialogs here pass `showCloseButton={false}` and provide a Chinese "取消" / "关闭" button instead.
 - Radix `ScrollArea` wraps its content in a `display: table` div that grows with its widest child, so `truncate` never applies. A scroll area with truncating rows adds `[&_[data-slot=scroll-area-viewport]>div]:block!` (see `Sidebar.tsx`).
+- Toolbar width (task `10-07-toolbar-labels-and-version`): the header is a `@container`. Below a content width of 1350 px (window 1374 px) the text of "打开文件" / "打开文件夹" is `sr-only`, so at the default 1280 px window the widest state (image document, brush tool) fits with 0 px to spare. A new toolbar item needs a new measurement of that state and a new breakpoint (container queries measure the content box, not the window).
 - `sonner` Toaster uses `theme="system"`; `next-themes` is not used.
 
 ## UI text

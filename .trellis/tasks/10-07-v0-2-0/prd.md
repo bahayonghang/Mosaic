@@ -44,12 +44,12 @@ Release version 0.2.0. The user can start over without restarting the app, choos
 
 ## Cross-Child Acceptance Criteria
 
-- [ ] X1. Toolbar order: logo | open file, open folder, reset | rectangle, brush, hand | block size, brush size (brush tool only), restore default | undo, redo | rotate left, rotate right (image documents only) | export | settings menu.
-- [ ] X2. At the default window size 1280 x 800 with an image document and the brush tool, no toolbar item is clipped or overlaps another (header `scrollWidth <= clientWidth`).
-- [ ] X3. Existing shortcuts keep their behavior. Dialogs (reset, settings, about) block editor shortcuts while open (existing rule in `useShortcuts.ts`).
-- [ ] X4. `pnpm typecheck && pnpm lint && pnpm test` and `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass; `cargo test --manifest-path src-tauri/Cargo.toml` passes.
-- [ ] X5. All new visible text is Chinese; icon-only buttons have a Chinese `aria-label` and a tooltip.
-- [ ] X6. `pnpm tauri build` produces installers named with version 0.2.0, and the about dialog of the built app shows `0.2.0`.
+- [x] X1. Toolbar order: logo | open file, open folder, reset | rectangle, brush, hand | block size, brush size (brush tool only), restore default | undo, redo | rotate left, rotate right (image documents only) | export | settings menu.
+- [x] X2. At the default window size 1280 x 800 with an image document and the brush tool, no toolbar item is clipped or overlaps another (header `scrollWidth <= clientWidth`).
+- [x] X3. Existing shortcuts keep their behavior. Dialogs (reset, settings, about) block editor shortcuts while open (existing rule in `useShortcuts.ts`).
+- [x] X4. `pnpm typecheck && pnpm lint && pnpm test` and `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass; `cargo test --manifest-path src-tauri/Cargo.toml` passes.
+- [x] X5. All new visible text is Chinese; icon-only buttons have a Chinese `aria-label` and a tooltip.
+- [x] X6. `pnpm tauri build` produces installers named with version 0.2.0, and the about dialog of the built app shows `0.2.0`.
 
 ## Out of Scope
 
@@ -59,3 +59,10 @@ Release version 0.2.0. The user can start over without restarting the app, choos
 - Removing a whole folder from the sidebar; drag-and-drop reordering in the tree.
 - Toolbar layout at the minimum window width 900 px. From the screenshot, the current toolbar probably does not fit at 900 px with all items shown (inferred, not measured). Child 4 measures the 900 px case and reports it; it does not change the layout for it.
 - Update checks, license text, changelog page.
+
+## Integration result (2026-10-07)
+
+- X1-X6 checked in the browser preview, by unit tests (`pnpm test`: 41 passed; `cargo test`: 14 passed), clippy, and `pnpm tauri build`.
+- Not run in the Tauri window: real export and folder import on disk, the about link opening the system browser, settings persistence across an app restart, close guard after a reset. Each child's `prd.md` lists them.
+- Found and fixed during the work: sidebar names did not truncate (Radix `ScrollArea`), also before this task.
+- Risk: the toolbar fits the default window with 0 px to spare in its widest state.

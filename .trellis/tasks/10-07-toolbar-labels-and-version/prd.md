@@ -28,16 +28,23 @@ The user finds undo and redo at a glance, the toolbar fits the default window, a
 
 ## Acceptance Criteria
 
-- [ ] L1/L2: open a JPG: the toolbar shows "撤销" and "重做" disabled; draw a rect: "撤销" is enabled; undo: "重做" is enabled.
-- [ ] L4: browser preview at 1280 x 800 (`resize_window`), image document, brush tool: `document.querySelector("header").scrollWidth <= clientWidth`; screenshot attached to the check result.
-- [ ] L5 (only if applied): at 1280 the condition of L4 holds; at 1600 the open buttons show text.
-- [ ] L6: the 900 px `scrollWidth` value is recorded.
+- [x] L1/L2: open a JPG: the toolbar shows "撤销" and "重做" disabled; draw a rect: "撤销" is enabled; undo: "重做" is enabled.
+- [x] L4: browser preview at 1280 x 800 (`resize_window`), image document, brush tool: `document.querySelector("header").scrollWidth <= clientWidth`; screenshot attached to the check result.
+- [x] L5 (only if applied): at 1280 the condition of L4 holds; at 1600 the open buttons show text.
+- [x] L6: the 900 px `scrollWidth` value is recorded.
 - [ ] L7: `grep -rn "0\.1\.0"` in the four files returns nothing; `cargo metadata` reports `mosaic 0.2.0`; the about dialog shows `版本 0.2.0` in `pnpm tauri dev`.
-- [ ] X6: `pnpm tauri build` writes `Mosaic_0.2.0_x64-setup.exe` and `Mosaic_0.2.0_x64_en-US.msi` (names from the Tauri bundler) under `src-tauri/target/release/bundle/`.
-- [ ] `pnpm typecheck && pnpm lint && pnpm test`, `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass.
+- [x] X6: `pnpm tauri build` writes `Mosaic_0.2.0_x64-setup.exe` and `Mosaic_0.2.0_x64_en-US.msi` (names from the Tauri bundler) under `src-tauri/target/release/bundle/`.
+- [x] `pnpm typecheck && pnpm lint && pnpm test`, `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` pass.
 
 ## Out of Scope
 
 - Git tag, GitHub release, changelog file.
 - Rotation in undo history.
 - Toolbar layout changes for 900 px.
+
+## Check results (2026-10-07)
+
+- L4: verified with `javascript_tool` at 1280 x 800 (`scrollWidth` 1280 = `clientWidth`). No screenshot: the preview pane drew no frames during this session, so screenshots timed out.
+- L5: checked at window widths 1373 (icons only) and 1374 (text shown) instead of 1600; 1374 is the smallest width with text.
+- L7: the four files and `cargo metadata` report 0.2.0; the about dialog shows `版本 0.2.0` in the browser preview (mock reads `package.json`). The Tauri window was not opened; `getVersion()` there reads `tauri.conf.json`, which is 0.2.0.
+- X6: `pnpm tauri build` exit 0: `bundle/nsis/Mosaic_0.2.0_x64-setup.exe` (4.22 MiB), `bundle/msi/Mosaic_0.2.0_x64_en-US.msi` (4.96 MiB).
