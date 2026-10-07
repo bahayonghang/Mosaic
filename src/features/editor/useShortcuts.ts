@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { exportCurrent } from "@/features/export/exportActions";
-import { redo, undo, useDocStore } from "@/store/docStore";
+import { redo, setPage, undo, useDocStore } from "@/store/docStore";
 import { sizesOf, useEditorStore } from "@/store/editorStore";
 import { RADIUS_MAX, RADIUS_MIN } from "./mosaicEngine";
 
@@ -32,7 +32,10 @@ export function useShortcuts() {
         else if (key === "0") editor.view?.fit();
         else handled = false;
       } else if (!e.ctrlKey && !e.altKey && !e.metaKey) {
-        if (key === "r") editor.setTool("rect");
+        if (key === "pageup" && ready) setPage(doc.id, doc.currentPage - 1);
+        else if (key === "pagedown" && ready)
+          setPage(doc.id, doc.currentPage + 1);
+        else if (key === "r") editor.setTool("rect");
         else if (key === "b") editor.setTool("brush");
         else if ((key === "[" || key === "]") && ready) {
           const radius = sizesOf(editor.sizes, doc)!.radius;

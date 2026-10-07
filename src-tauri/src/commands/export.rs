@@ -40,10 +40,13 @@ pub fn create_unique(source: &Path) -> Result<(PathBuf, File), String> {
     Err(fail("同名文件过多"))
 }
 
+fn same_file(a: &Path, b: &Path) -> bool {
+    matches!((a.canonicalize(), b.canonicalize()), (Ok(a), Ok(b)) if a == b)
+}
+
 /// Save as: the user confirmed an overwrite in the system dialog, but the source is never written.
 pub fn create_target(source: &Path, target: &Path) -> Result<File, String> {
-    let same = matches!((source.canonicalize(), target.canonicalize()), (Ok(a), Ok(b)) if a == b);
-    if same {
+    if same_file(source, target) {
         return Err("不能覆盖原文件".into());
     }
     File::create(target).map_err(fail)
@@ -60,6 +63,23 @@ fn write_to(source: &Path, target: Option<&Path>, bytes: &[u8]) -> Result<PathBu
         return Err(fail(e));
     }
     Ok(path)
+}
+
+/// A later chunk of a chunked write: the first chunk created `target`, which holds `offset` bytes.
+fn append_to(source: &Path, target: &Path, offset: u64, bytes: &[u8]) -> Result<PathBuf, String> {
+    if same_file(source, target) {
+        return Err("不能覆盖原文件".into());
+    }
+    let mut file = OpenOptions::new().append(true).open(target).map_err(fail)?;
+    if file.metadata().map_err(fail)?.len() != offset {
+        return Err(fail("文件长度与写入位置不符"));
+    }
+    if let Err(e) = file.write_all(bytes).and_then(|_| file.sync_all()) {
+        drop(file);
+        let _ = std::fs::remove_file(target);
+        return Err(fail(e));
+    }
+    Ok(target.to_path_buf())
 }
 
 /// RGB over a white background, for formats without alpha.
@@ -141,11 +161,26 @@ pub async fn export_image(request: Request<'_>) -> Result<String, String> {
 }
 
 /// Write already encoded bytes (PDF export). Returns the written path.
+/// Large files come in chunks: `x-offset` 0 creates the file, later chunks name it in `x-target`.
 #[tauri::command]
 pub async fn write_export(request: Request<'_>) -> Result<String, String> {
     let (bytes, source, target) = parse(&request)?;
+    let offset = match request.headers().get("x-offset") {
+        Some(v) => v
+            .to_str()
+            .ok()
+            .and_then(|v| v.parse::<u64>().ok())
+            .ok_or_else(|| fail("写入位置无效"))?,
+        None => 0,
+    };
     tauri::async_runtime::spawn_blocking(move || {
-        write_to(&source, target.as_deref(), &bytes).map(|p| p.to_string_lossy().into_owned())
+        let path = if offset == 0 {
+            write_to(&source, target.as_deref(), &bytes)
+        } else {
+            let target = target.ok_or_else(|| fail("缺少目标路径"))?;
+            append_to(&source, &target, offset, &bytes)
+        };
+        path.map(|p| p.to_string_lossy().into_owned())
     })
     .await
     .map_err(fail)?
@@ -208,6 +243,22 @@ mod tests {
     }
 
     #[test]
+    fn chunks_append_at_the_written_length_only() {
+        let dir = tempfile::tempdir().unwrap();
+        let src = dir.path().join("a.pdf");
+        std::fs::write(&src, b"source").unwrap();
+        let path = write_to(&src, None, b"one").unwrap();
+        assert_eq!(append_to(&src, &path, 3, b"two").unwrap(), path);
+        assert_eq!(std::fs::read(&path).unwrap(), b"onetwo");
+        assert!(append_to(&src, &path, 3, b"x").is_err());
+        assert_eq!(
+            append_to(&src, &src, 6, b"x").unwrap_err(),
+            "不能覆盖原文件"
+        );
+        assert_eq!(std::fs::read(&src).unwrap(), b"source");
+    }
+
+    #[test]
     fn encodes_every_target_format_at_the_same_size() {
         let mut img = RgbaImage::new(3, 2);
         img.put_pixel(0, 0, image::Rgba([10, 20, 30, 0]));
@@ -220,7 +271,9 @@ mod tests {
             assert_eq!((out.width(), out.height()), (3, 2), "{ext}");
         }
         // Transparent pixels become white in formats without alpha.
-        let bmp = image::load_from_memory(&encode(&png, "bmp").unwrap()).unwrap().to_rgb8();
+        let bmp = image::load_from_memory(&encode(&png, "bmp").unwrap())
+            .unwrap()
+            .to_rgb8();
         assert_eq!(bmp.get_pixel(0, 0).0, [255, 255, 255]);
         assert_eq!(encode(&png, "gif").unwrap_err(), "不支持的格式：gif");
     }

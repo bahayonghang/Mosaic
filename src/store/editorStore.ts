@@ -35,7 +35,8 @@ export function sizesOf(
   if (!doc) return undefined;
   const stored = sizes[doc.id];
   if (stored) return stored;
-  const page = doc.pages[doc.currentPage];
+  // PDF: the first page decides the defaults for every page (P4).
+  const page = doc.pages[0];
   if (!page) return undefined;
   return {
     block: defaultBlock(page.width, page.height),

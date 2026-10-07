@@ -131,6 +131,13 @@ export function redo(docId: string) {
   );
 }
 
+/** Show page `index` (PDF). */
+export function setPage(docId: string, index: number) {
+  useDocStore.getState().update(docId, (d) => ({
+    currentPage: Math.min(d.pages.length - 1, Math.max(0, index)),
+  }));
+}
+
 /** Record a successful export of the state at `version`. */
 export function markExported(docId: string, version: number) {
   useDocStore.getState().update(docId, { exportedVersion: version });

@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { loadPdf } from "@/features/pdf/pdfLoader";
+import { getPdf, loadPdf, releasePdf } from "@/features/pdf/pdfLoader";
 import { useDocStore } from "@/store/docStore";
 import type { MosaicDoc } from "@/store/types";
 
@@ -42,11 +42,13 @@ function cacheBitmap(docId: string, bitmap: ImageBitmap) {
 export function releaseDocument(docId: string) {
   bitmaps.get(docId)?.close();
   bitmaps.delete(docId);
+  releasePdf(docId);
 }
 
 export function needsLoad(doc: MosaicDoc): boolean {
   if (doc.status === "idle") return true;
-  return doc.status === "ready" && doc.kind === "image" && !bitmaps.has(doc.id);
+  if (doc.status !== "ready") return false;
+  return doc.kind === "image" ? !bitmaps.has(doc.id) : !getPdf(doc.id);
 }
 
 async function decodeImage(doc: MosaicDoc, bytes: Uint8Array<ArrayBuffer>): Promise<ImageBitmap> {

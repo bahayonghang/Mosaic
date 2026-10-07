@@ -1,14 +1,36 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { cpSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import type { Plugin } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
+/**
+ * pdf.js loads CMaps, standard fonts, ICC profiles and wasm decoders by URL at run time.
+ * Dev serves them from /node_modules/pdfjs-dist/; the build copies them to dist/pdfjs/.
+ */
+function pdfjsAssets(): Plugin {
+  let outDir = "dist";
+  return {
+    name: "pdfjs-assets",
+    apply: "build",
+    configResolved: (config) => {
+      outDir = path.resolve(config.root, config.build.outDir);
+    },
+    writeBundle: () => {
+      for (const dir of ["cmaps", "standard_fonts", "iccs", "wasm"]) {
+        cpSync(path.resolve(__dirname, "node_modules/pdfjs-dist", dir), path.join(outDir, "pdfjs", dir), { recursive: true });
+      }
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig(() => ({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), pdfjsAssets()],
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
   },

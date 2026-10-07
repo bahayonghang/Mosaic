@@ -131,9 +131,13 @@ export class PageRenderer {
   private stale = false;
   private listeners = new Set<() => void>();
 
-  constructor(private readonly base: ImageBitmap) {
+  /** `cpu`: a CPU canvas frees its pixels when resized to 0; a GPU canvas holds them until GC. */
+  constructor(
+    private readonly base: ImageBitmap,
+    cpu = false,
+  ) {
     this.composite = new OffscreenCanvas(base.width, base.height);
-    this.ctx = this.composite.getContext("2d")!;
+    this.ctx = this.composite.getContext("2d", { willReadFrequently: cpu })!;
     this.ctx.drawImage(base, 0, 0);
   }
 
@@ -249,7 +253,7 @@ export async function renderComposite(
   base: ImageBitmap,
   ops: readonly MosaicOp[],
 ): Promise<OffscreenCanvas> {
-  const r = new PageRenderer(base);
+  const r = new PageRenderer(base, true);
   await r.sync(ops);
   return r.composite;
 }

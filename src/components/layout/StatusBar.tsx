@@ -2,6 +2,7 @@ import { Scan, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrentDoc } from "@/store/docStore";
 import { useEditorStore } from "@/store/editorStore";
+import { PageNav } from "./PageNav";
 
 export function StatusBar() {
   const doc = useCurrentDoc();
@@ -18,6 +19,7 @@ export function StatusBar() {
             ? doc.name
             : "未打开文件"}
       </span>
+      {page && doc?.kind === "pdf" && <PageNav doc={doc} />}
       <div className="ml-auto flex items-center gap-0.5">
         <Button
           variant="ghost"

@@ -6,10 +6,10 @@ Shared contracts: `../10-06-mosaic-mvp/design.md` 3.2-3.4. Mechanism follows Cov
 
 ```
 src/features/pdf/
-  pdfLoader.ts     loadPdf(bytes) -> PdfHandle { pageCount, pageSize(i) in points (rotation applied) }
-                   pdfjs-dist with its worker bundled via Vite `?url`; isEvalSupported = false
-  pageCache.ts     renderPage(handle, i) -> ImageBitmap at scale = min(200/72, 8192 / max(wPt, hPt) * ...)
-                   LRU of 3 bitmaps; evicted bitmaps are close()d
+  pageGeometry.ts  pageGeometry(view, rotate) -> point size (rotation applied), scale = min(200/72, 8192 / max side), raster size
+  pdfLoader.ts     loadPdf(docId, bytes) -> PageState[]; the PDFDocumentProxy stays in a Map by docId (getPdf, releasePdf)
+                   pdfjs-dist with its worker bundled via Vite `?url`
+  pageCache.ts     rasterize(pdf, i) -> ImageBitmap; renderPage(pdf, docId, i) adds an LRU of 3; evicted bitmaps are close()d
   exportPdf.ts     registered in exporters as "pdf"
 src/components/layout/PageNav.tsx   status-bar page navigation
 ```
@@ -29,7 +29,7 @@ The editor's `PageRenderer` takes a base bitmap. For PDF, the base bitmap is `re
 
 1. Create `PDFDocument` with pdf-lib.
 2. For each page i, sequentially: render at 200 DPI (bypassing the LRU so the cache is not flushed), create a `PageRenderer`, `rebuild(ops)`, `convertToBlob({ type: "image/jpeg", quality: 0.9 })`, `embedJpg`, `addPage([wPt, hPt])`, `drawImage` full page, release bitmaps. Yield to the event loop between pages (`await` a `setTimeout(0)`) and update the progress toast.
-3. `pdf.save({ useObjectStreams: true })` -> `invoke("write_export", bytes, { headers: { "x-source", "x-target" } })` (shared 3.2; the automatic name keeps `.pdf`).
+3. `pdf.save({ useObjectStreams: true })` -> `invoke("write_export", chunk, { headers: { "x-source", "x-target", "x-offset" } })` in 8 MB chunks (shared 3.2; the automatic name keeps `.pdf`).
 4. Metadata: set Producer "Mosaic"; set no title, author, or subject. Original metadata is not copied.
 
 ## Memory
@@ -41,3 +41,10 @@ The editor's `PageRenderer` takes a base bitmap. For PDF, the base bitmap is `re
 - pdf.js worker under Tauri CSP: requires `worker-src 'self' blob:` (set by app-shell S8).
 - pdf.js fonts: set `cMapUrl` and `standardFontDataUrl` to bundled assets copied from `pdfjs-dist` so CJK PDFs render correctly offline.
 - Coordinate precision: ops are in raster pixels at a fixed scale per page; export uses the same scale, so no coordinate conversion exists.
+
+## Implementation notes
+
+- pdf.js 6: `isEvalSupported` no longer exists; `PDFDocumentProxy` has no `destroy`, so `releasePdf` calls `loadingTask.destroy()`. Password errors are detected by `e.name === "PasswordException"` (verified with a pypdf-encrypted file).
+- Assets: in dev, cMaps, standard fonts, ICC profiles, and wasm decoders load from `/node_modules/pdfjs-dist/`; the `pdfjsAssets` plugin in `vite.config.ts` copies them to `dist/pdfjs/` for builds. The CSP `connect-src` includes `'self'` so pdf.js can fetch them.
+- Export memory, measured on a 200-page A4 PDF (whole process tree, private bytes): the first version reached 2.0-2.9 GB. Two causes were measured and fixed. (1) A GPU-backed `OffscreenCanvas` per page kept 16 MB until GC; `renderComposite` now uses a CPU canvas (`willReadFrequently`). (2) WebView2 held about 15 times the 78 MB request body; `write_export` now takes 8 MB chunks. After both fixes: peak 893 MB with page 1 mosaicked, 1,022 MB with every page mosaicked; the event loop lag stayed below 50 ms; 200 pages export in about 7 s.
+- Output size: about 390 KB per text page at JPEG quality 0.9 (78 MB for 200 pages).

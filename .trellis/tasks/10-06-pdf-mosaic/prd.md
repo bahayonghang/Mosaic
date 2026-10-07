@@ -23,13 +23,13 @@ The user opens a PDF, moves between pages, applies mosaic on any page with the s
 
 ## Acceptance Criteria
 
-- [ ] P1/P2: open a 12-page PDF; navigate to page 12 and back with buttons, keys, and the page number field.
-- [ ] P6: export a text PDF after mosaic on page 1; the output has the same page count and page sizes (points, ±0.5); `pdftotext` on the output returns only whitespace.
-- [ ] P6: page 2 (no ops) in the output looks the same as the source at 100 % zoom.
-- [ ] P8/P10: export a 200-page PDF; the UI stays responsive; the app's memory stays below 1.5 GB during export (Task Manager).
-- [ ] P9: a password-protected PDF and a corrupt PDF each show the correct error; other documents still work.
-- [ ] P11: a PDF with a 90° rotated page displays and exports upright.
-- [ ] The mosaic region in the exported page matches the editor view.
+- [x] P1/P2: open a 12-page PDF; navigate to page 12 and back with buttons, keys, and the page number field.
+- [x] P6: export a text PDF after mosaic on page 1; the output has the same page count and page sizes (points, ±0.5); `pdftotext` on the output returns only whitespace.
+- [x] P6: page 2 (no ops) in the output looks the same as the source at 100 % zoom.
+- [x] P8/P10: export a 200-page PDF; the UI stays responsive; the app's memory stays below 1.5 GB during export (Task Manager).
+- [x] P9: a password-protected PDF and a corrupt PDF each show the correct error; other documents still work.
+- [x] P11: a PDF with a 90° rotated page displays and exports upright.
+- [x] The mosaic region in the exported page matches the editor view.
 
 ## Out of Scope
 

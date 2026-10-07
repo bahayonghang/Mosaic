@@ -27,11 +27,13 @@ function latest(id: string): MosaicDoc | undefined {
   return useDocStore.getState().docs.find((d) => d.id === id);
 }
 
-async function run(doc: MosaicDoc, target?: string): Promise<string> {
-  const exporter = exporters[doc.kind];
-  if (!exporter) throw new Error("暂不支持导出此类文件");
+async function run(
+  doc: MosaicDoc,
+  target?: string,
+  progress?: (done: number, total: number) => void,
+): Promise<string> {
   const version = doc.version;
-  const path = await exporter(doc, target);
+  const path = await exporters[doc.kind](doc, target, progress);
   markExported(doc.id, version);
   return path;
 }
@@ -59,7 +61,12 @@ async function exclusive(task: () => Promise<void>) {
 async function exportOne(doc: MosaicDoc, target?: string) {
   const id = toast.loading("正在导出…");
   try {
-    const path = await run(doc, target);
+    const path = await run(doc, target, (done, total) => {
+      if (total > 1)
+        toast.loading(`正在导出第 ${Math.min(done + 1, total)} / ${total} 页`, {
+          id,
+        });
+    });
     toast.success(`已导出：${fileName(path)}`, {
       id,
       action: revealAction(path),
@@ -108,33 +115,34 @@ export function saveAsCurrent(): Promise<void> {
 /** Export every edited document next to its source (E11). */
 export function exportAll(): Promise<void> {
   return exclusive(async () => {
-    const edited = useDocStore.getState().docs.filter(hasOps);
-    const todo = edited.filter((d) => exporters[d.kind]);
-    const skipped = edited.length - todo.length;
-    if (todo.length === 0) {
-      if (skipped > 0) toast.info(`${skipped} 个 PDF 暂不支持导出，已跳过`);
-      return;
-    }
+    const todo = useDocStore.getState().docs.filter(hasOps);
+    if (todo.length === 0) return;
     const id = toast.loading(`正在导出 0 / ${todo.length}`);
     let ok = 0;
     let lastPath = "";
     const errors: string[] = [];
     for (const [i, doc] of todo.entries()) {
-      toast.loading(`正在导出 ${i + 1} / ${todo.length}`, { id });
+      toast.loading(`正在导出 ${i + 1} / ${todo.length}`, {
+        id,
+        description: undefined,
+      });
       const fresh = latest(doc.id);
       if (!fresh) continue;
       try {
-        lastPath = await run(fresh);
+        lastPath = await run(fresh, undefined, (done, total) => {
+          if (total > 1)
+            toast.loading(`正在导出 ${i + 1} / ${todo.length}`, {
+              id,
+              description: `第 ${Math.min(done + 1, total)} / ${total} 页`,
+            });
+        });
         ok++;
       } catch (e) {
         errors.push(`${doc.name}：${message(e)}`);
       }
     }
-    const notes = [];
-    if (errors.length > 0)
-      notes.push(`${errors.length} 个失败（${errors[0]}）`);
-    if (skipped > 0) notes.push(`${skipped} 个 PDF 暂不支持导出，已跳过`);
-    const description = notes.join("；") || undefined;
+    const description =
+      errors.length > 0 ? `${errors.length} 个失败（${errors[0]}）` : undefined;
     const action = ok > 0 ? revealAction(lastPath) : undefined;
     if (errors.length > 0)
       toast.warning(`已导出 ${ok} 个文件`, { id, description, action });
