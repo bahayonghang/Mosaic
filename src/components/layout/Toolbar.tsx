@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { openFilesDialog, openFolderDialog } from "@/features/import/importActions";
 import { Kbd } from "./Kbd";
 import { PixelMark } from "./PixelMark";
 
@@ -36,7 +37,7 @@ function SizeControl({ label, value, min, max, disabled }: { label: string; valu
 }
 
 export function Toolbar() {
-  // Every control is a disabled placeholder until the editor and import tasks connect them.
+  // Editing controls are disabled placeholders until the editor task connects them.
   const noDoc = true;
 
   return (
@@ -50,13 +51,13 @@ export function Toolbar() {
 
       <div className="flex items-center gap-1">
         <Tip label="打开文件" shortcut="Ctrl+O">
-          <Button variant="ghost" size="sm" disabled>
+          <Button variant="ghost" size="sm" onClick={() => void openFilesDialog()}>
             <ImagePlus />
             打开文件
           </Button>
         </Tip>
         <Tip label="打开文件夹">
-          <Button variant="ghost" size="sm" disabled>
+          <Button variant="ghost" size="sm" onClick={() => void openFolderDialog()}>
             <FolderOpen />
             打开文件夹
           </Button>

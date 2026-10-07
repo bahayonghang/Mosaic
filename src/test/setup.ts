@@ -19,3 +19,8 @@ globalThis.ResizeObserver ??= class {
   unobserve() {}
   disconnect() {}
 };
+
+// No Tauri runtime in tests.
+import { mockIPC, mockWindows } from "@tauri-apps/api/mocks";
+mockWindows("main");
+mockIPC(() => null);

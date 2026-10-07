@@ -18,7 +18,7 @@ Do not infer libraries, directory layout, error handling, logging, state, types,
 |-------|-------------|--------|
 | [Directory Structure](./directory-structure.md) | Backend file and module layout | Established |
 | [Database Guidelines](./database-guidelines.md) | Persistence and data access | Not established |
-| [Error Handling](./error-handling.md) | Failure representation and handling | Not established |
+| [Error Handling](./error-handling.md) | Failure representation and handling | Established |
 | [Quality Guidelines](./quality-guidelines.md) | Backend quality expectations | Established |
 | [Logging Guidelines](./logging-guidelines.md) | Logging expectations | Not established |
 
