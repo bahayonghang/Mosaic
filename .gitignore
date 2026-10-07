@@ -1,0 +1,8 @@
+.agents/
+.claude/
+.codex/
+.cursor/
+.omp/
+.grok/
+.kimi-code/
+ref/

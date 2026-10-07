@@ -1,0 +1,30 @@
+{
+  "id": "00-bootstrap-guidelines",
+  "name": "00-bootstrap-guidelines",
+  "title": "Bootstrap Guidelines",
+  "description": "Initialize Mosaic with a product README and record that coding conventions are not established yet",
+  "status": "in_progress",
+  "dev_type": "docs",
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-10-07",
+  "completedAt": null,
+  "branch": "main",
+  "base_branch": null,
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "AGENTS.md",
+    ".trellis/spec/backend/",
+    ".trellis/spec/frontend/"
+  ],
+  "notes": "Constrained to repo-initialization docs only: README, AGENTS.md, and honest empty specs. No architecture and no application code.",
+  "meta": {}
+}

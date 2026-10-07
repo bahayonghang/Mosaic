@@ -1,0 +1,3 @@
+{"file": "AGENTS.md", "reason": "Project note that must stay outside the Trellis-managed block"}
+{"file": ".trellis/spec/backend/", "type": "directory", "reason": "Backend guidelines this task may only mark as not established"}
+{"file": ".trellis/spec/frontend/", "type": "directory", "reason": "Frontend guidelines this task may only mark as not established"}

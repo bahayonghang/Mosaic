@@ -1,0 +1,3 @@
+{"file": "AGENTS.md", "reason": "Verify the Trellis-managed block is unchanged"}
+{"file": ".trellis/spec/backend/", "type": "directory", "reason": "Verify backend specs do not invent a stack"}
+{"file": ".trellis/spec/frontend/", "type": "directory", "reason": "Verify frontend specs do not invent a stack"}
