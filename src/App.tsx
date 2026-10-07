@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { DocumentView } from "@/components/layout/DocumentView";
 import { DropOverlay } from "@/components/layout/DropOverlay";
 import { EmptyState } from "@/components/layout/EmptyState";
@@ -13,9 +14,11 @@ import { openFilesDialog, openFolderDialog } from "@/features/import/importActio
 import { useDocumentLoader } from "@/features/import/useDocumentLoader";
 import { useDragDrop } from "@/features/import/useDragDrop";
 import { useOpenShortcut } from "@/features/import/useOpenShortcut";
+import { SettingsPage } from "@/features/settings/SettingsPage";
 import { useCurrentDoc, useDocStore } from "@/store/docStore";
 
 function App() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const hasDocs = useDocStore((s) => s.docs.length > 0);
   const doc = useCurrentDoc();
   const dragging = useDragDrop();
@@ -25,8 +28,8 @@ function App() {
 
   return (
     <TooltipProvider delayDuration={400}>
-      <div className="flex h-full flex-col">
-        <Toolbar />
+      <div inert={settingsOpen} className="flex h-full flex-col">
+        <Toolbar onOpenSettings={() => setSettingsOpen(true)} />
         <main className="relative min-h-0 flex-1">
           {hasDocs ? (
             <ResizablePanelGroup orientation="horizontal">
@@ -47,6 +50,7 @@ function App() {
         </main>
         <StatusBar />
       </div>
+      {settingsOpen && <SettingsPage onClose={() => setSettingsOpen(false)} />}
       <CloseGuard />
       <Toaster position="bottom-right" />
     </TooltipProvider>

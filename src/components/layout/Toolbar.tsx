@@ -65,7 +65,7 @@ function SizeControl({
   );
 }
 
-export function Toolbar() {
+export function Toolbar({ onOpenSettings }: { onOpenSettings: () => void }) {
   const doc = useCurrentDoc();
   const page = doc?.status === "ready" ? doc.pages[doc.currentPage] : undefined;
   const sizes = useSizes(doc);
@@ -242,7 +242,7 @@ export function Toolbar() {
         </DropdownMenu>
       </div>
 
-      <SettingsMenu />
+      <SettingsMenu onOpenSettings={onOpenSettings} />
     </header>
   );
 }

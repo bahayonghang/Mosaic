@@ -9,12 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AboutDialog } from "./AboutDialog";
-import { SettingsDialog } from "./SettingsDialog";
 
-/** Toolbar gear: opens the settings or the about dialog. */
-export function SettingsMenu() {
-  const [open, setOpen] = useState<"settings" | "about" | null>(null);
-  const change = (which: "settings" | "about") => (next: boolean) => setOpen(next ? which : null);
+/** Toolbar gear: opens the settings page or the about dialog. */
+export function SettingsMenu({ onOpenSettings }: { onOpenSettings: () => void }) {
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
     <>
@@ -30,12 +28,11 @@ export function SettingsMenu() {
           <TooltipContent side="bottom">设置和关于</TooltipContent>
         </Tooltip>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setOpen("settings")}>设置…</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setOpen("about")}>关于 Mosaic</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onOpenSettings()}>设置…</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setAboutOpen(true)}>关于 Mosaic</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <SettingsDialog open={open === "settings"} onOpenChange={change("settings")} />
-      <AboutDialog open={open === "about"} onOpenChange={change("about")} />
+      <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
     </>
   );
 }

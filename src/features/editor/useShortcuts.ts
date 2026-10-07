@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { exportCurrent } from "@/features/export/exportActions";
+import { settingsPageOpen } from "@/features/settings/settingsPageOpen";
 import { redo, setPage, undo, useDocStore } from "@/store/docStore";
 import { sizesOf, useEditorStore } from "@/store/editorStore";
 import { RADIUS_MAX, RADIUS_MIN } from "./mosaicEngine";
@@ -13,8 +14,9 @@ export function useShortcuts() {
         e.target.matches("input, textarea, [contenteditable]")
       )
         return;
-      // Dialogs own the keyboard while open.
+      // Dialogs and the settings page own the keyboard while open.
       if (document.querySelector("[role=alertdialog], [role=dialog]")) return;
+      if (settingsPageOpen()) return;
       const { docs, currentId } = useDocStore.getState();
       const doc = docs.find((d) => d.id === currentId);
       const editor = useEditorStore.getState();

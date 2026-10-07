@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { settingsPageOpen } from "@/features/settings/settingsPageOpen";
 import { useEditorStore, useSizes } from "@/store/editorStore";
 import type { MosaicDoc } from "@/store/types";
 import type { Rect } from "./mosaicEngine";
@@ -216,6 +217,7 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
       e.target instanceof HTMLElement &&
       e.target.matches("input, textarea, [contenteditable]");
     const onKeyDown = (e: KeyboardEvent) => {
+      if (settingsPageOpen()) return;
       if (e.code === "Space" && !isTyping(e)) {
         e.preventDefault();
         setSpace(true);
