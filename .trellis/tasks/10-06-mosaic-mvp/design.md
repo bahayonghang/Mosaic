@@ -33,7 +33,7 @@ Editor (canvas, ops, mosaic engine)
 Exporter:
   image: canvas -> PNG bytes -> export_image -> decode PNG, encode to source format,
                                                write to unique `_mosaic` path
-  pdf:   pages -> JPEG -> pdf-lib -> bytes -> write_export(src, bytes, "pdf")
+  pdf:   pages -> JPEG -> pdf-lib -> bytes -> write_export(src, bytes)
   save as: dialog.save -> path -> same commands with explicit target path
 ```
 
@@ -53,14 +53,14 @@ Rust never overwrites the source file. `export_*` commands reject a target path 
 |---|---|---|---|
 | `scan_paths` | `paths: string[]` (files or directories) | `ScannedFile[]` = `{ path, name, kind: "image" \| "pdf", size }`, sorted by path, de-duplicated | Unreadable directories are skipped and counted in `skipped: number` |
 | `read_file` | `path: string` | raw bytes (`tauri::ipc::Response`) | `"文件无法读取：<reason>"` |
-| `export_image` | raw PNG bytes in the request body; header/args `{ sourcePath, targetPath?: string }` | `{ path }` written | encode or write failure |
-| `write_export` | raw bytes; `{ sourcePath, targetPath?: string, ext: "pdf" }` | `{ path }` written | write failure |
+| `export_image` | raw PNG bytes in the request body; headers `x-source`, `x-target` (empty = automatic name) | written path (string) | encode or write failure |
+| `write_export` | raw bytes; headers `x-source`, `x-target`; the automatic name keeps the source extension | written path (string) | write failure |
 | `reveal_in_folder` | `path: string` | none | Explorer launch failure |
 
 - When `targetPath` is absent, Rust computes `<dir>/<stem>_mosaic.<ext>`; if the path exists it tries `<stem>_mosaic_2.<ext>`, `_3`, and so on. The check and the write use `OpenOptions::create_new(true)` to avoid a race.
 - When `targetPath` is present (Save as), Rust writes to that path (overwrite allowed because the user confirmed it in the system dialog) unless it equals `sourcePath`.
 - Raw-body commands (`export_image`, `write_export`) receive the bytes as the request body (`invoke(cmd, Uint8Array, { headers })`) and read `sourcePath` / `targetPath` from request headers. Header values are `encodeURIComponent` strings because paths can contain non-ASCII characters; Rust decodes them.
-- `export_image` chooses the output format from the target extension: JPEG quality 92, PNG default compression, WebP lossless, BMP 24-bit.
+- `export_image` chooses the output format from the target extension: JPEG quality 92, PNG default compression, WebP lossless, BMP 24-bit. JPEG and BMP have no alpha; transparent pixels are composited over white.
 - Error strings returned to the UI are Chinese (D8).
 
 ### 3.3 Document model (frontend)

@@ -35,15 +35,15 @@ On the current image, the user selects regions with a rectangle or a brush, the 
 
 ## Acceptance Criteria
 
-- [ ] E1/E2: draw one rectangle and one brush stroke on a 4000 x 3000 JPG; mosaic appears within 100 ms of releasing the mouse (rect) and follows the cursor while painting (brush) without visible lag.
-- [ ] E3: two rectangles with block sizes 8 and 40 show visibly different cell sizes; both stay after undo of a later op.
-- [ ] E5: undo 2 times, redo 1 time; the canvas matches the expected state.
-- [ ] E9/E14: export a JPG twice; `a_mosaic.jpg` and `a_mosaic_2.jpg` exist; `a.jpg` size and modified time are unchanged.
-- [ ] E10: Save as PNG from a JPG source produces a valid PNG.
-- [ ] Export of a BMP and a WebP source produces files of the same format that open in Windows Photos.
-- [ ] E15: edit a file and close the window: the dialog appears; "取消" keeps the app open; export the file and close again: the app closes without a dialog.
-- [ ] Exported image has the same pixel size as the source and no EXIF data.
-- [ ] Unit tests (vitest): block mean on a known 4 x 4 image; rect snap to grid; op replay equals incremental application; export name generation is covered by `cargo test` (collision numbering, source-path rejection).
+- [x] E1/E2: draw one rectangle and one brush stroke on a 4000 x 3000 JPG; mosaic appears within 100 ms of releasing the mouse (rect) and follows the cursor while painting (brush) without visible lag.
+- [x] E3: two rectangles with block sizes 8 and 40 show visibly different cell sizes; both stay after undo of a later op.
+- [x] E5: undo 2 times, redo 1 time; the canvas matches the expected state.
+- [x] E9/E14: export a JPG twice; `a_mosaic.jpg` and `a_mosaic_2.jpg` exist; `a.jpg` size and modified time are unchanged.
+- [x] E10: Save as PNG from a JPG source produces a valid PNG.
+- [x] Export of a BMP and a WebP source produces files of the same format that open in Windows Photos.
+- [x] E15: edit a file and close the window: the dialog appears; "取消" keeps the app open; export the file and close again: the app closes without a dialog.
+- [x] Exported image has the same pixel size as the source and no EXIF data.
+- [x] Unit tests (vitest): block mean on a known 4 x 4 image; rect snap to grid; op replay equals incremental application; export name generation is covered by `cargo test` (collision numbering, source-path rejection).
 
 ## Out of Scope
 

@@ -23,6 +23,17 @@ src-tauri/src/commands/export.rs
   export_image, write_export, unique_target_path(src, ext) (pure, tested), reveal_in_folder
 ```
 
+## Implementation notes (2026-10-06)
+
+The modules above were built with these differences:
+
+- `PageRenderer` exposes `sync(ops)` instead of `applyOp` / `rebuild`. `opsDelta` compares the drawn ops with the store ops by identity: a prefix match draws the new ops, anything else replays from the base. `listen(fn)` replaces an `onChange` property (React Compiler lint). The composite is the `composite` field.
+- Live brush: `beginStroke`, `paintSegment`, `endStroke`. A live stroke differs from a replay at the anti-aliased edge (measured: 2013 pixels, max channel difference 47 on a 4000 x 3000 page), so `endStroke` marks the composite stale and the stroke op replays all ops (about 20 ms on 4000 x 3000). Item 5 below is replaced by this.
+- `tools/types.ts` holds the shared `ToolContext` / `ToolSession` types.
+- `exportAll` lives in `exportActions.ts` with `exportCurrent` and `saveAsCurrent`; the dialog for E15 is `CloseGuard.tsx`.
+- Rust: `target_name(src, n)` (pure, tested) and `create_unique(src)` replace `unique_target_path`. Commands return the written path as a string.
+- Export of a document that is not shown renders off screen with `renderComposite(base, ops)`; the base comes from the bitmap cache or `readImageBitmap` (not cached, closed after use).
+
 ## Rendering pipeline
 
 1. On document ready: `PageRenderer` draws the base bitmap into the composite canvas, then `rebuild(page.ops)`.

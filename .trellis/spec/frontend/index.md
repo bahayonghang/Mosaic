@@ -18,7 +18,7 @@ Do not infer libraries, directory layout, error handling, logging, state, types,
 |-------|-------------|--------|
 | [Directory Structure](./directory-structure.md) | Frontend file and module layout | Established |
 | [Component Guidelines](./component-guidelines.md) | UI composition | Established |
-| [Hook Guidelines](./hook-guidelines.md) | Shared view logic | Not established |
+| [Hook Guidelines](./hook-guidelines.md) | Shared view logic | Established |
 | [State Management](./state-management.md) | How state is held | Established |
 | [Quality Guidelines](./quality-guidelines.md) | Frontend quality expectations | Established |
 | [Type Safety](./type-safety.md) | Types and validation | Established |

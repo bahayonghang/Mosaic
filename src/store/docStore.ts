@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { DocKind, MosaicDoc } from "./types";
+import type { DocKind, MosaicDoc, MosaicOp, PageState } from "./types";
 
 export interface NewDoc {
   path: string;
@@ -89,4 +89,49 @@ export const useDocStore = create<DocState>((set, get) => ({
 
 export function useCurrentDoc(): MosaicDoc | undefined {
   return useDocStore((s) => s.docs.find((d) => d.id === s.currentId));
+}
+
+function updatePage(docId: string, fn: (page: PageState) => PageState | null) {
+  useDocStore.getState().update(docId, (d) => {
+    const page = d.pages[d.currentPage];
+    const next = page && fn(page);
+    if (!next) return {};
+    const pages = d.pages.slice();
+    pages[d.currentPage] = next;
+    return { pages, version: d.version + 1 };
+  });
+}
+
+/** Add an op to the current page; a new op clears redo. */
+export function pushOp(docId: string, op: MosaicOp) {
+  updatePage(docId, (p) => ({ ...p, ops: [...p.ops, op], redo: [] }));
+}
+
+export function undo(docId: string) {
+  updatePage(docId, (p) =>
+    p.ops.length === 0
+      ? null
+      : {
+          ...p,
+          ops: p.ops.slice(0, -1),
+          redo: [...p.redo, p.ops[p.ops.length - 1]],
+        },
+  );
+}
+
+export function redo(docId: string) {
+  updatePage(docId, (p) =>
+    p.redo.length === 0
+      ? null
+      : {
+          ...p,
+          ops: [...p.ops, p.redo[p.redo.length - 1]],
+          redo: p.redo.slice(0, -1),
+        },
+  );
+}
+
+/** Record a successful export of the state at `version`. */
+export function markExported(docId: string, version: number) {
+  useDocStore.getState().update(docId, { exportedVersion: version });
 }

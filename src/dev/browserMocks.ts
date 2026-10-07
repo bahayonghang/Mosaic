@@ -23,6 +23,11 @@ mockIPC(async (cmd, args) => {
     });
     return { files, ignored: 0, skippedDirs: 0 };
   }
+  if (cmd === "export_image" || cmd === "write_export") {
+    // No file is written; the bytes are kept for inspection.
+    Object.assign(window, { __lastExport: args });
+    return "C:\\mock\\exported_mosaic.png";
+  }
   return null;
 });
 

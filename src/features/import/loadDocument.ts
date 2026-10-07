@@ -86,3 +86,9 @@ export async function loadDocument(doc: MosaicDoc): Promise<void> {
     update(doc.id, { status: "error", error: e instanceof Error ? e.message : String(e) });
   }
 }
+
+/** Read and decode an image without caching it (export of a document that is not shown). */
+export async function readImageBitmap(doc: MosaicDoc): Promise<ImageBitmap> {
+  const buffer = await invoke<ArrayBuffer>("read_file", { path: doc.path });
+  return decodeImage(doc, new Uint8Array(buffer));
+}

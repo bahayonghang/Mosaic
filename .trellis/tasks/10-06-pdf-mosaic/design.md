@@ -29,7 +29,7 @@ The editor's `PageRenderer` takes a base bitmap. For PDF, the base bitmap is `re
 
 1. Create `PDFDocument` with pdf-lib.
 2. For each page i, sequentially: render at 200 DPI (bypassing the LRU so the cache is not flushed), create a `PageRenderer`, `rebuild(ops)`, `convertToBlob({ type: "image/jpeg", quality: 0.9 })`, `embedJpg`, `addPage([wPt, hPt])`, `drawImage` full page, release bitmaps. Yield to the event loop between pages (`await` a `setTimeout(0)`) and update the progress toast.
-3. `pdf.save({ useObjectStreams: true })` -> `invoke("write_export", bytes, headers)` with `ext: "pdf"`.
+3. `pdf.save({ useObjectStreams: true })` -> `invoke("write_export", bytes, { headers: { "x-source", "x-target" } })` (shared 3.2; the automatic name keeps `.pdf`).
 4. Metadata: set Producer "Mosaic"; set no title, author, or subject. Original metadata is not copied.
 
 ## Memory

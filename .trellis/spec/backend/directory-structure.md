@@ -18,5 +18,6 @@ src-tauri/
 ## Rules
 
 - Every `#[tauri::command]` lives in `src/commands/<feature>.rs` and is registered in `lib.rs` `generate_handler!`.
-- Every new command or plugin needs an explicit permission in `capabilities/default.json`. Current grants: `core:default`, `dialog:default`. No shell, no asset protocol, no network.
+- App commands from `generate_handler!` need no capability entry (no app manifest is defined in `build.rs`). Plugin and core APIs do: current grants are `core:default`, `core:window:allow-destroy` (the close guard; the JS `onCloseRequested` listener also calls `destroy()` when the close is not prevented), `dialog:default`. No shell, no asset protocol, no network.
+- `reveal_in_folder` starts `explorer /select,"<path>"` through `std::process::Command::raw_arg` (Windows argument quoting); no shell plugin.
 - CSP in `tauri.conf.json` allows `worker-src 'self' blob:` for Web Workers (pdf.js, mosaic worker).

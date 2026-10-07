@@ -20,6 +20,16 @@ globalThis.ResizeObserver ??= class {
   disconnect() {}
 };
 
+// jsdom has no ImageData; the mosaic engine builds it.
+globalThis.ImageData ??= class {
+  readonly colorSpace = "srgb" as const;
+  constructor(
+    readonly data: Uint8ClampedArray<ArrayBuffer>,
+    readonly width: number,
+    readonly height: number,
+  ) {}
+} as unknown as typeof ImageData;
+
 // No Tauri runtime in tests.
 import { mockIPC, mockWindows } from "@tauri-apps/api/mocks";
 mockWindows("main");

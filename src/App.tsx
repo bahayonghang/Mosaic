@@ -7,6 +7,8 @@ import { Toolbar } from "@/components/layout/Toolbar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useShortcuts } from "@/features/editor/useShortcuts";
+import { CloseGuard } from "@/features/export/CloseGuard";
 import { openFilesDialog, openFolderDialog } from "@/features/import/importActions";
 import { useDocumentLoader } from "@/features/import/useDocumentLoader";
 import { useDragDrop } from "@/features/import/useDragDrop";
@@ -19,6 +21,7 @@ function App() {
   const dragging = useDragDrop();
   useOpenShortcut();
   useDocumentLoader();
+  useShortcuts();
 
   return (
     <TooltipProvider delayDuration={400}>
@@ -44,6 +47,7 @@ function App() {
         </main>
         <StatusBar />
       </div>
+      <CloseGuard />
       <Toaster position="bottom-right" />
     </TooltipProvider>
   );

@@ -11,3 +11,10 @@
 - The store holds only serializable data (`MosaicDoc` from `src/store/types.ts`). Decoded `ImageBitmap`s live in a module-level LRU cache in `src/features/import/loadDocument.ts` (current document + 2 most recent). A document with `status: "ready"` may have no cached bitmap; `needsLoad(doc)` decides when to reload. Ops stay in the store across reloads.
 - Derived flags are plain functions over a doc: `hasOps(doc)`, `isUnexported(doc)` (`hasOps && version !== exportedVersion`).
 - Read with selectors (`useDocStore((s) => s.docs.length)`) to limit re-renders; use `useDocStore.getState()` in non-React code.
+
+## Ops and rendering (established by task `10-06-image-mosaic-editor`, 2026-10-06)
+
+- Op changes go through `pushOp`, `undo`, `redo` in `docStore.ts`. Each acts on the current page and increments `doc.version`; a new op clears `redo`. `markExported(id, version)` takes the version captured before the export started, so an edit made during an export keeps the document marked.
+- The store is the single source of truth for ops. `PageRenderer.sync(ops)` compares the ops it already drew with the store ops by object identity (`opsDelta`): a prefix match draws only the new ops; anything else (undo, changed history) replays all ops from the base bitmap. Never mutate an op object after it enters the store.
+- All composite drawing runs through one promise queue per renderer, so a replay after undo and live brush painting cannot interleave. Live brush segments draw directly; `endStroke()` marks the composite stale so the stroke op that follows replays all ops. This keeps the shown, exported, and undo/redo-replayed pixels identical.
+- `src/store/editorStore.ts` holds UI state that is not part of a document: `tool`, block and brush sizes per document id (absent = defaults from the page size via `sizesOf`), the viewport `zoom`, and `view` (zoom commands the status bar and shortcuts call). The viewport transform itself stays in a ref inside `Viewport.tsx`.

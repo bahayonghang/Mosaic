@@ -7,6 +7,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::files::scan_paths,
             commands::files::read_file,
+            commands::export::export_image,
+            commands::export::write_export,
+            commands::export::reveal_in_folder,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
