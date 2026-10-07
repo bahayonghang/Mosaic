@@ -1,0 +1,29 @@
+{
+  "id": "editor-toolbar-optimization",
+  "name": "editor-toolbar-optimization",
+  "title": "Editor toolbar optimization: hand tool, size reset, image rotation",
+  "description": "Parent: toolbar size reset button, hand tool for pan and zoom, 90-degree image rotation baked into export",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-10-07",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-07-hand-tool-and-size-reset",
+    "10-07-image-rotation"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

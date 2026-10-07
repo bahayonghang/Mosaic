@@ -173,7 +173,7 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
       const unit = e.deltaMode === 1 ? 16 : 1;
       const dx = e.deltaX * unit;
       const dy = e.deltaY * unit;
-      if (e.ctrlKey) {
+      if (e.ctrlKey || (live.current.tool === "hand" && !e.shiftKey)) {
         const box = container.getBoundingClientRect();
         zoomAt(
           e.clientX - box.left,
@@ -265,11 +265,18 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
       docId,
       space: spaceDown,
     } = live.current;
-    if (e.button === 1 || (e.button === 0 && spaceDown)) {
+    if (
+      e.button === 1 ||
+      (e.button === 0 && (spaceDown || currentTool === "hand"))
+    ) {
       e.preventDefault();
       gesture.current = { kind: "pan", x: e.clientX, y: e.clientY };
       setPanning(true);
-    } else if (e.button === 0 && r) {
+    } else if (
+      e.button === 0 &&
+      r &&
+      (currentTool === "rect" || currentTool === "brush")
+    ) {
       const ctx = {
         docId,
         renderer: r,
@@ -316,7 +323,7 @@ export function Viewport({ doc, base }: { doc: MosaicDoc; base: ImageBitmap }) {
 
   const cursor = panning
     ? "cursor-grabbing"
-    : space
+    : space || tool === "hand"
       ? "cursor-grab"
       : tool === "brush"
         ? "cursor-none"

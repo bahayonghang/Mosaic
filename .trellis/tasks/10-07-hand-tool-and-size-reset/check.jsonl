@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/archive/2026-10/10-06-mosaic-mvp/design.md", "reason": "Shared document model, mosaic algorithm defaults (3.4), UI layout and shortcut table (4)"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend conventions index"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "docStore/editorStore contracts, op identity and renderer sync rules"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Toolbar styling, icons, Chinese text, aria-label and tooltip rules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Validation commands, browser preview mocks, canvas memory rules"}

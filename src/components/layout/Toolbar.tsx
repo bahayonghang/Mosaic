@@ -1,4 +1,4 @@
-import { Brush, ChevronDown, Download, FolderOpen, ImagePlus, Redo2, SquareDashed, Undo2 } from "lucide-react";
+import { Brush, ChevronDown, Download, FolderOpen, Hand, ImagePlus, Redo2, SquareDashed, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import { BLOCK_MAX, BLOCK_MIN, RADIUS_MAX, RADIUS_MIN } from "@/features/editor/
 import { exportAll, exportCurrent, saveAsCurrent } from "@/features/export/exportActions";
 import { openFilesDialog, openFolderDialog } from "@/features/import/importActions";
 import { hasOps, redo, undo, useCurrentDoc, useDocStore } from "@/store/docStore";
-import { useEditorStore, useSizes, type Tool } from "@/store/editorStore";
+import { defaultSizes, useEditorStore, useSizes, type Tool } from "@/store/editorStore";
 import { Kbd } from "./Kbd";
 import { PixelMark } from "./PixelMark";
 
@@ -68,10 +68,13 @@ export function Toolbar() {
   const page = doc?.status === "ready" ? doc.pages[doc.currentPage] : undefined;
   const sizes = useSizes(doc);
   const tool = useEditorStore((s) => s.tool);
-  const { setTool, setSizes } = useEditorStore.getState();
+  const { setTool, setSizes, resetSizes } = useEditorStore.getState();
   const anyEdited = useDocStore((s) => s.docs.some(hasOps));
   const noDoc = !doc || !page || !sizes;
   const canExport = !!doc && hasOps(doc);
+  const defaults = doc && defaultSizes(doc);
+  const atDefaults =
+    !!sizes && !!defaults && sizes.block === defaults.block && sizes.radius === defaults.radius;
 
   return (
     <header className="flex h-11 shrink-0 items-center gap-3 border-b bg-chrome px-3">
@@ -119,6 +122,12 @@ export function Toolbar() {
             画笔
           </ToggleGroupItem>
         </Tip>
+        <Tip label="抓手（平移和缩放）" shortcut="H">
+          <ToggleGroupItem value="hand" aria-label="抓手" className="px-2">
+            <Hand />
+            抓手
+          </ToggleGroupItem>
+        </Tip>
       </ToggleGroup>
 
       <SizeControl
@@ -139,6 +148,16 @@ export function Toolbar() {
           onChange={(radius) => doc && setSizes(doc, { radius })}
         />
       )}
+      <Tip label="恢复默认颗粒和笔刷大小">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={noDoc || atDefaults}
+          onClick={() => doc && resetSizes(doc)}
+        >
+          恢复默认
+        </Button>
+      </Tip>
 
       <Separator orientation="vertical" className="h-5!" />
 

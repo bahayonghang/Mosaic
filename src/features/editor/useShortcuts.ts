@@ -37,6 +37,7 @@ export function useShortcuts() {
           setPage(doc.id, doc.currentPage + 1);
         else if (key === "r") editor.setTool("rect");
         else if (key === "b") editor.setTool("brush");
+        else if (key === "h") editor.setTool("hand");
         else if ((key === "[" || key === "]") && ready) {
           const radius = sizesOf(editor.sizes, doc)!.radius;
           const step = Math.max(1, Math.round(radius * 0.1));
