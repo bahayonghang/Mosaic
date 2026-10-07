@@ -136,3 +136,18 @@ describe("docStore", () => {
     expect(useDocStore.getState().docs[0].rotation).toBeUndefined();
   });
 });
+
+describe("docStore folder fields", () => {
+  beforeEach(() => useDocStore.setState({ docs: [], currentId: null }));
+
+  it("copies root and dirs; a duplicate keeps the first entry", () => {
+    const { addDocs } = useDocStore.getState();
+    addDocs([{ ...file("D:/证书/2024/b.png"), root: "D:/证书", dirs: ["2024"] }, file("D:/x.png")]);
+    addDocs([{ ...file("D:/证书/2024/b.png"), root: "D:/证书/2024", dirs: [] }]);
+    const [b, x] = useDocStore.getState().docs;
+    expect(b.root).toBe("D:/证书");
+    expect(b.dirs).toEqual(["2024"]);
+    expect(x.root).toBeUndefined();
+    expect(x.dirs).toBeUndefined();
+  });
+});

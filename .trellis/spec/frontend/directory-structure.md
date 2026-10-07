@@ -55,6 +55,13 @@ src/lib/exportName.ts    DEFAULT_EXPORT_SUFFIX, suffixError, suffixedName (share
 src/store/settingsStore.ts  persisted user settings
 ```
 
+## Sidebar (established by task `10-07-sidebar-folder-tree`, 2026-10-07)
+
+```
+src/features/sidebar/
+  buildTree.ts           folder tree of the open documents, ancestorKeys
+```
+
 ## Rules
 
 - Import with the `@/` alias (maps to `src/`), not deep relative paths across folders.

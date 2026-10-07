@@ -5,6 +5,8 @@ export interface NewDoc {
   path: string;
   name: string;
   kind: DocKind;
+  root?: string;
+  dirs?: string[];
 }
 
 /** Windows paths are case-insensitive and accept both separators. */
@@ -57,6 +59,7 @@ export const useDocStore = create<DocState>((set, get) => ({
         path: f.path,
         name: f.name,
         kind: f.kind,
+        ...(f.root !== undefined && { root: f.root, dirs: f.dirs ?? [] }),
         status: "idle",
         pages: [],
         currentPage: 0,

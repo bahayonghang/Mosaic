@@ -37,3 +37,9 @@
 - `src/store/settingsStore.ts` holds user settings with the zustand `persist` middleware in `localStorage` key `mosaic.settings` (`version: 1`). Only `exportSuffix` exists; default `DEFAULT_EXPORT_SUFFIX` (`_打码版`) from `src/lib/exportName.ts`.
 - The store only holds valid, trimmed values: `setExportSuffix` ignores a value that fails `suffixError`, and `merge` replaces an invalid stored value with the default.
 - Exporters read `useSettingsStore.getState().exportSuffix` once per document export. The browser preview (`localhost:5180`) and the Tauri window keep separate `localStorage`.
+
+## Folder tree (established by task `10-07-sidebar-folder-tree`, 2026-10-07)
+
+- `scan_paths` returns `root` (the imported folder as given) and `dirs` (folder names from `root` to the parent, from Rust `strip_prefix`) for files found in a folder; explicit files have neither. `addDocs` copies them into `MosaicDoc.root` / `MosaicDoc.dirs`; they never change, and a duplicate import keeps the first entry's values.
+- `buildTree(docs)` in `src/features/sidebar/buildTree.ts` derives the sidebar tree on every render (`useMemo` over `docs`). Folder keys are `docIdOf(root)` plus lowercased folder names joined by `\`; `ancestorKeys(doc)` gives them outermost first. Folders exist only through documents, so removing the last file removes the folder.
+- Collapse state is a `Set` of folder keys in `Sidebar` component state, not in a store. A selection change expands the ancestors of the new current document; this is a state adjustment during render (not an effect), so the user can still collapse the folder of the current file.

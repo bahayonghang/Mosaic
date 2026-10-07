@@ -13,6 +13,12 @@ pub struct ScannedFile {
     pub name: String,
     pub kind: &'static str,
     pub size: u64,
+    /// The imported folder this file was found in; `None` for an explicit file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub root: Option<String>,
+    /// Directory components from `root` to the file's parent; empty directly in `root`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dirs: Option<Vec<String>>,
 }
 
 #[derive(Debug, Default, Serialize)]
@@ -59,7 +65,8 @@ struct Scanner {
 }
 
 impl Scanner {
-    fn push_file(&mut self, path: &Path, size: u64) {
+    /// `root` is the imported folder for a file found by `scan_dir`.
+    fn push_file(&mut self, path: &Path, size: u64, root: Option<&Path>) {
         let Some(kind) = kind_of(path) else {
             self.result.ignored += 1;
             return;
@@ -76,6 +83,17 @@ impl Scanner {
                 .unwrap_or_default(),
             kind,
             size,
+            root: root.map(|r| r.to_string_lossy().into_owned()),
+            dirs: root.map(|r| {
+                path.parent()
+                    .and_then(|p| p.strip_prefix(r).ok())
+                    .map(|rel| {
+                        rel.components()
+                            .map(|c| c.as_os_str().to_string_lossy().into_owned())
+                            .collect()
+                    })
+                    .unwrap_or_default()
+            }),
         });
     }
 
@@ -97,7 +115,7 @@ impl Scanner {
         }
         found.sort_by(|a, b| a.0.cmp(&b.0));
         for (path, size) in found {
-            self.push_file(&path, size);
+            self.push_file(&path, size, Some(root));
         }
     }
 }
@@ -113,7 +131,7 @@ pub fn scan(paths: &[String]) -> ScanResult {
         paths.iter().map(Path::new).partition(|p| p.is_dir());
     for file in files {
         match std::fs::metadata(file) {
-            Ok(meta) => scanner.push_file(file, meta.len()),
+            Ok(meta) => scanner.push_file(file, meta.len(), None),
             Err(_) => scanner.result.ignored += 1,
         }
     }
@@ -192,6 +210,59 @@ mod tests {
             a_str,
         ]);
         assert_eq!(names(&r), vec!["b.webp", "a.png"]);
+    }
+
+    #[test]
+    fn folder_files_carry_root_and_relative_dirs() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().join("证书");
+        fs::create_dir_all(root.join("2024").join("省赛")).unwrap();
+        fs::write(root.join("a.jpg"), b"x").unwrap();
+        fs::write(root.join("2024").join("b.png"), b"x").unwrap();
+        fs::write(root.join("2024").join("省赛").join("c.pdf"), b"x").unwrap();
+        let loose = dir.path().join("x.png");
+        fs::write(&loose, b"x").unwrap();
+        let root_str = root.to_string_lossy().into_owned();
+
+        let r = scan(&[root_str.clone(), loose.to_string_lossy().into_owned()]);
+        let by_name = |n: &str| r.files.iter().find(|f| f.name == n).unwrap();
+        assert_eq!(by_name("x.png").root, None);
+        assert_eq!(by_name("x.png").dirs, None);
+        assert_eq!(by_name("a.jpg").root.as_deref(), Some(root_str.as_str()));
+        assert_eq!(by_name("a.jpg").dirs, Some(vec![]));
+        assert_eq!(by_name("b.png").dirs, Some(vec!["2024".to_string()]));
+        assert_eq!(
+            by_name("c.pdf").dirs,
+            Some(vec!["2024".to_string(), "省赛".to_string()])
+        );
+    }
+
+    #[test]
+    fn explicit_file_inside_a_scanned_folder_has_no_root() {
+        let dir = tempfile::tempdir().unwrap();
+        let a = dir.path().join("a.png");
+        fs::write(&a, b"x").unwrap();
+        let r = scan(&[
+            dir.path().to_string_lossy().into_owned(),
+            a.to_string_lossy().into_owned(),
+        ]);
+        assert_eq!(r.files.len(), 1);
+        assert_eq!(r.files[0].root, None);
+    }
+
+    #[test]
+    fn root_with_trailing_separator_gives_relative_dirs() {
+        // Same shape as a drive root such as `D:\`, which ends with a separator.
+        let dir = tempfile::tempdir().unwrap();
+        fs::create_dir(dir.path().join("sub")).unwrap();
+        fs::write(dir.path().join("sub").join("b.png"), b"x").unwrap();
+        let root = format!(
+            "{}{}",
+            dir.path().to_string_lossy(),
+            std::path::MAIN_SEPARATOR
+        );
+        let r = scan(&[root]);
+        assert_eq!(r.files[0].dirs, Some(vec!["sub".to_string()]));
     }
 
     #[test]

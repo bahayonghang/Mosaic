@@ -18,6 +18,7 @@
 - Local changes to generated primitives are limited to: `cn` import from `@/lib/utils`, transitions restricted to color/transform (never `transition-all`), press feedback `active:scale-[0.96]`, the `signal` button variant, and the signal color for pressed toggles. Keep any new change in this list.
 - The shadcn CLI may write `import { cn } from "cn"` and add an npm package `cn`. Replace the import with `@/lib/utils` and remove the package (`pnpm remove cn`). Answer `n` when it asks to overwrite `button.tsx`.
 - Dialog close buttons from shadcn carry the English screen-reader text "Close"; dialogs here pass `showCloseButton={false}` and provide a Chinese "取消" / "关闭" button instead.
+- Radix `ScrollArea` wraps its content in a `display: table` div that grows with its widest child, so `truncate` never applies. A scroll area with truncating rows adds `[&_[data-slot=scroll-area-viewport]>div]:block!` (see `Sidebar.tsx`).
 - `sonner` Toaster uses `theme="system"`; `next-themes` is not used.
 
 ## UI text

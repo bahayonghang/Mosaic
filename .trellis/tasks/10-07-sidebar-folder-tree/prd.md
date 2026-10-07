@@ -23,7 +23,7 @@ After a folder import, the sidebar shows the files in the folder structure of th
 
 ## Acceptance Criteria
 
-- [ ] F1/F2: import a folder `证书` with `a.jpg`, `2024/b.png`, `2024/省赛/c.pdf`, and `notes.txt`: the tree is (indent = level):
+- [x] F1/F2: import a folder `证书` with `a.jpg`, `2024/b.png`, `2024/省赛/c.pdf`, and `notes.txt`: the tree is (indent = level):
   ```
   证书
     2024
@@ -33,15 +33,15 @@ After a folder import, the sidebar shows the files in the folder structure of th
     a.jpg
   ```
   `notes.txt` is not shown (existing ignore rule).
-- [ ] F3: then open `x.png` from another folder with "打开文件": `x.png` is a top-level row after the `证书` node.
-- [ ] F5: collapse `2024`: `b.png` and `c.pdf` hide; the row shows the count 2.
-- [ ] F7: edit `c.pdf`, collapse `证书`: the `证书` row shows the edited marker.
-- [ ] F8: collapse `2024`, select `c.pdf` through a new import of `c.pdf`: `2024` and `省赛` expand.
-- [ ] F10: remove `c.pdf`: the `省赛` node disappears.
-- [ ] Rust unit test: a folder scan returns, per file, the import root and the relative directory components; an explicit file has neither; a drive root such as `D:\` gives correct relative directories.
-- [ ] Unit test (vitest) of the tree builder: grouping, order rules F4, counts F7, empty-folder removal F10.
+- [x] F3: then open `x.png` from another folder with "打开文件": `x.png` is a top-level row after the `证书` node.
+- [x] F5: collapse `2024`: `b.png` and `c.pdf` hide; the row shows the count 2.
+- [x] F7: edit `c.pdf`, collapse `证书`: the `证书` row shows the edited marker.
+- [x] F8: collapse `2024`, select `c.pdf` through a new import of `c.pdf`: `2024` and `省赛` expand.
+- [x] F10: remove `c.pdf`: the `省赛` node disappears.
+- [x] Rust unit test: a folder scan returns, per file, the import root and the relative directory components; an explicit file has neither; a drive root such as `D:\` gives correct relative directories.
+- [x] Unit test (vitest) of the tree builder: grouping, order rules F4, counts F7, empty-folder removal F10.
 - [ ] With 500 files in 50 folders the sidebar scrolls without visible delay (manual check in `pnpm tauri dev`).
-- [ ] `pnpm typecheck && pnpm lint && pnpm test`, `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings`, `cargo test --manifest-path src-tauri/Cargo.toml` pass.
+- [x] `pnpm typecheck && pnpm lint && pnpm test`, `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings`, `cargo test --manifest-path src-tauri/Cargo.toml` pass.
 
 ## Out of Scope
 
@@ -50,3 +50,10 @@ After a folder import, the sidebar shows the files in the folder structure of th
 - Merging one-child folder chains into one row.
 - Folder nodes for files opened one by one.
 - Virtualized rendering.
+
+## Check results (2026-10-07)
+
+- F1-F11: verified in the browser preview with injected documents that carry `root` / `dirs` (`javascript_tool`). Real folder import in `pnpm tauri dev` was not run; the Rust scan fields are covered by `cargo test` (`folder_files_carry_root_and_relative_dirs`, `explicit_file_inside_a_scanned_folder_has_no_root`, `root_with_trailing_separator_gives_relative_dirs`).
+- F8 limit: the expand happens when the selection changes. Re-importing the file that is already current does not change the selection, so a collapsed folder of that file stays collapsed.
+- 500 files in 50 folders (browser preview, dev build): import render 254 ms, one store change re-render 56 ms. Not measured in `pnpm tauri dev`.
+- Found during the check: long names did not truncate in the sidebar (Radix `ScrollArea` table wrapper). This was also true before this task (user screenshot). Fixed in `Sidebar.tsx`; depth-5 row truncates and the remove button stays inside the panel.

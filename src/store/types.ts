@@ -22,6 +22,10 @@ export interface MosaicDoc {
   path: string;
   name: string;
   kind: DocKind;
+  /** Imported folder the file came from; absent for a file opened on its own. */
+  root?: string;
+  /** Folder names from `root` to the file's parent; set together with `root`. */
+  dirs?: string[];
   status: "idle" | "loading" | "ready" | "error";
   error?: string;
   pages: PageState[];
