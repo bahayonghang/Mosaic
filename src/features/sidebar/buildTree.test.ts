@@ -3,6 +3,7 @@ import type { MosaicDoc } from "@/store/types";
 import {
   ancestorKeys,
   buildTree,
+  folderKeys,
   type FolderNode,
   type TreeNode,
 } from "./buildTree";
@@ -113,6 +114,19 @@ describe("buildTree", () => {
       "  a.jpg",
     ]);
     expect(buildTree([])).toEqual([]);
+  });
+
+  it("lists every folder key, parent before children", () => {
+    const tree = buildTree([
+      doc(`${R}\\2024\\省赛\\c.pdf`, R, ["2024", "省赛"]),
+      doc("E:\\x.png"),
+    ]);
+    expect(folderKeys(tree)).toEqual([
+      docIdOf(R),
+      `${docIdOf(R)}\\2024`,
+      `${docIdOf(R)}\\2024\\省赛`,
+    ]);
+    expect(folderKeys([])).toEqual([]);
   });
 
   it("lists ancestor keys outermost first", () => {

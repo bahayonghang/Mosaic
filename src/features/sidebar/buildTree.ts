@@ -98,3 +98,17 @@ export function buildTree(docs: MosaicDoc[]): TreeNode[] {
   for (const node of top) if (node.type === "folder") finish(node);
   return top;
 }
+
+/** Folder keys in `nodes`, parent before its children. */
+export function folderKeys(nodes: readonly TreeNode[]): string[] {
+  const keys: string[] = [];
+  const walk = (list: readonly TreeNode[]) => {
+    for (const node of list) {
+      if (node.type !== "folder") continue;
+      keys.push(node.key);
+      walk(node.children);
+    }
+  };
+  walk(nodes);
+  return keys;
+}

@@ -1,5 +1,7 @@
 import {
   ChevronRight,
+  ChevronsDownUp,
+  ChevronsUpDown,
   CircleAlert,
   FileImage,
   FileText,
@@ -19,11 +21,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { releaseDocument } from "@/features/import/loadDocument";
 import {
   ancestorKeys,
   buildTree,
+  folderKeys,
   type FolderNode,
   type TreeNode,
 } from "@/features/sidebar/buildTree";
@@ -40,6 +45,39 @@ function EditedMarker() {
       aria-label="已编辑未导出"
       className="size-1.5 shrink-0 rounded-full bg-signal"
     />
+  );
+}
+
+function TreeAction({
+  label,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        {/* A disabled button does not receive hover, so the span keeps the tooltip. */}
+        <span className="inline-flex">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={label}
+            disabled={disabled}
+            onClick={onClick}
+          >
+            {children}
+          </Button>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -142,6 +180,8 @@ export function Sidebar() {
   /** Keys of collapsed folders (UI state of this view only). */
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
   const tree = useMemo(() => buildTree(docs), [docs]);
+  const allKeys = useMemo(() => folderKeys(tree), [tree]);
+  const collapsedHere = allKeys.filter((key) => collapsed.has(key)).length;
 
   // F8: a newly selected document is not hidden in a collapsed folder. Adjusted during render
   // when the selection changes, so the user can still collapse the folder of the current file.
@@ -198,9 +238,25 @@ export function Sidebar() {
 
   return (
     <aside className="flex h-full flex-col bg-chrome">
-      <div className="flex h-9 shrink-0 items-center px-3 text-xs text-muted-foreground">
+      <div className="flex h-9 shrink-0 items-center gap-0.5 px-3 text-xs text-muted-foreground">
         <span className="font-medium text-foreground">文件</span>
-        <span className="ml-1.5 tabular-nums">{docs.length}</span>
+        <span className="ml-1 tabular-nums">{docs.length}</span>
+        <div className="ml-auto flex items-center gap-0.5">
+          <TreeAction
+            label="展开所有文件夹"
+            disabled={collapsedHere === 0}
+            onClick={() => setCollapsed(new Set())}
+          >
+            <ChevronsUpDown />
+          </TreeAction>
+          <TreeAction
+            label="收缩所有文件夹"
+            disabled={collapsedHere === allKeys.length}
+            onClick={() => setCollapsed(new Set(allKeys))}
+          >
+            <ChevronsDownUp />
+          </TreeAction>
+        </div>
       </div>
       {/* Radix wraps the content in a `display: table` div that grows with long names; block keeps it at the panel width so names truncate. */}
       <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
