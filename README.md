@@ -83,3 +83,7 @@ src/          React 界面、编辑器和导出
 src-tauri/    Tauri 命令：读文件、扫描目录、写导出
 justfile      上面的开发命令
 ```
+
+## 许可
+
+[MIT License](LICENSE) © 2026 lyh

@@ -27,6 +27,7 @@
   },
   "bundle": {
     "active": true,
+    "copyright": "Copyright (c) 2026 lyh",
     "targets": [
       "nsis",
       "msi"
