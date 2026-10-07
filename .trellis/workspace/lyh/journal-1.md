@@ -92,3 +92,35 @@ Replaced the Tauri template icon with a user-selected mosaic tile mark. The icon
 ### Status
 
 [OK] **Completed**
+
+
+## Session 4: Settings as a full-window page
+<!-- trellis-session: v=2 fp=6e08418e698d6a64 -->
+
+**Date**: 2026-10-07
+**Task**: Settings as a full-window page
+**Branch**: `main`
+
+### Summary
+
+Replaced the settings dialog with a full-window page that has a close button. Unsaved suffix drafts are discarded on close or Escape.
+
+### Main Changes
+
+- Settings opens as a page that covers the workspace; the workspace stays mounted and inert.
+- Close and Escape discard the draft. Save writes the trimmed suffix and returns. About stays a dialog.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a788503` | feat(settings): 把设置从弹窗改成带关闭按钮的整页 |
+| `578a2cf` | docs(spec): 记录设置页的打开状态和全局监听让路 |
+
+### Testing
+
+- [OK] pnpm typecheck, pnpm lint, and pnpm test passed (53 tests). Browser preview checked close, Escape, invalid input, save, and About.
+
+### Status
+
+[OK] **Completed**

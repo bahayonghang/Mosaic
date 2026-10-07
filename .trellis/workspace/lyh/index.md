@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 3
+- **Total Sessions**: 4
 - **Last Active**: 2026-10-07
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~94 | Active |
+| `journal-1.md` | ~126 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 4 | 2026-10-07 | Settings as a full-window page | `a788503`, `578a2cf` | `main` |
 | 3 | 2026-10-07 | Redesign the application icon | `0379f84` | `main` |
 | 2 | 2026-10-06 | Mosaic MVP: PDF mosaic and integration review | `d55bd66`, `9f0d672`, `34d5281`, `cd877e9` | `main` |
 | 1 | 2026-10-06 | Initialize Mosaic docs | `c4855fcbd356ec537658c63d3cc305da32af3e9c` | `main` |
