@@ -46,13 +46,13 @@ Ordering detail is in each child `prd.md` / `implement.md`.
 
 ## Cross-Child Acceptance Criteria
 
-- [ ] AC1. For each import method in D3, a user can open a supported file and see it in the editor.
-- [ ] AC2. A user opens a JPG, applies one rectangle mosaic and one brush mosaic, clicks Export, and gets `<name>_mosaic.jpg` next to the original. The original file is unchanged (same byte size and modified time).
-- [ ] AC3. A user opens a text PDF, applies mosaic on page 1, and exports. The output `<name>_mosaic.pdf` has the same page count and page sizes. Text extraction on the output (for example `pdftotext`, or select-all in a PDF viewer) returns no text.
-- [ ] AC4. In every exported file, pixels inside a mosaic region are block averages; no original pixel inside the region is kept.
-- [ ] AC5. The UI contains only: import, rectangle tool, brush tool, block size, brush size, undo, redo, zoom, page navigation (PDF), export, save as, export all, document list, close confirmation.
-- [ ] AC6. `pnpm tauri build` produces a Windows installer without errors.
-- [ ] AC7. The UI follows the Windows light/dark setting and all visible text is Chinese.
+- [x] AC1. For each import method in D3, a user can open a supported file and see it in the editor.
+- [x] AC2. A user opens a JPG, applies one rectangle mosaic and one brush mosaic, clicks Export, and gets `<name>_mosaic.jpg` next to the original. The original file is unchanged (same byte size and modified time).
+- [x] AC3. A user opens a text PDF, applies mosaic on page 1, and exports. The output `<name>_mosaic.pdf` has the same page count and page sizes. Text extraction on the output (for example `pdftotext`, or select-all in a PDF viewer) returns no text.
+- [x] AC4. In every exported file, pixels inside a mosaic region are block averages; no original pixel inside the region is kept.
+- [x] AC5. The UI contains only: import, rectangle tool, brush tool, block size, brush size, undo, redo, zoom, page navigation (PDF), export, save as, export all, document list, close confirmation.
+- [x] AC6. `pnpm tauri build` produces a Windows installer without errors.
+- [x] AC7. The UI follows the Windows light/dark setting and all visible text is Chinese.
 
 ## Out of Scope
 

@@ -10,12 +10,12 @@ The parent task has no direct implementation work. It owns ordering and the fina
 
 ## Integration Review (after all children are archived)
 
-- [ ] Run every parent acceptance criterion AC1-AC7 in `pnpm tauri dev` on Windows.
-- [ ] AC2 check: compare size and modified time of the source file before and after export.
-- [ ] AC3 check: run `pdftotext <name>_mosaic.pdf -` (or select-all in a PDF viewer) and confirm empty output; compare page count and page sizes with the source.
-- [ ] AC5 check: walk every toolbar, menu, and context menu; list any control outside AC5.
-- [ ] AC6 check: `pnpm tauri build` and install the produced installer.
-- [ ] Update `.trellis/spec/frontend/*` and `.trellis/spec/backend/*` from "Not established" to the conventions the children created (step 3.3).
+- [x] Run every parent acceptance criterion AC1-AC7 in `pnpm tauri dev` on Windows. AC1, AC2, and AC7 were checked in the child tasks; AC3-AC6 in the integration review.
+- [x] AC2 check: compare size and modified time of the source file before and after export.
+- [x] AC3 check: run `pdftotext <name>_mosaic.pdf -` (or select-all in a PDF viewer) and confirm empty output; compare page count and page sizes with the source.
+- [x] AC5 check: walk every toolbar, menu, and context menu; list any control outside AC5. No control is outside AC5; the remove button and its confirmation belong to the document list.
+- [ ] AC6 check: `pnpm tauri build` and install the produced installer. The build produced the NSIS and MSI installers, and the release exe rendered a CJK PDF from the bundled `pdfjs/` assets. The installer was not installed.
+- [x] Update `.trellis/spec/frontend/*` and `.trellis/spec/backend/*` from "Not established" to the conventions the children created (step 3.3).
 
 ## Validation Commands (defined by app-shell)
 
