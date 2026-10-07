@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { PDFDocument } from "pdf-lib";
 import { renderComposite } from "@/features/editor/pageRenderer";
 import { rasterize } from "@/features/pdf/pageCache";
 import { getPdf } from "@/features/pdf/pdfLoader";
@@ -15,6 +14,7 @@ export async function exportPdf(
 ): Promise<string> {
   const pdf = getPdf(doc.id);
   if (!pdf) throw new Error("文件已关闭");
+  const { PDFDocument } = await import("pdf-lib");
   const out = await PDFDocument.create({ updateMetadata: false });
   out.setProducer("Mosaic");
   out.setCreator("Mosaic");
