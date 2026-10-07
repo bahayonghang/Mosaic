@@ -78,8 +78,9 @@ export function Toolbar() {
   const atDefaults =
     !!sizes && !!defaults && sizes.block === defaults.block && sizes.radius === defaults.radius;
 
+  // Container query on the header content box: below 1350 px (window 1374 px; the widest toolbar state plus 8 px) the open buttons show icons only.
   return (
-    <header className="flex h-11 shrink-0 items-center gap-3 border-b bg-chrome px-3">
+    <header className="@container flex h-11 shrink-0 items-center gap-3 border-b bg-chrome px-3">
       <div className="flex items-center gap-2 pr-1">
         <PixelMark />
         <span className="text-[13px] font-semibold tracking-tight">Mosaic</span>
@@ -91,13 +92,13 @@ export function Toolbar() {
         <Tip label="打开文件" shortcut="Ctrl+O">
           <Button variant="ghost" size="sm" onClick={() => void openFilesDialog()}>
             <ImagePlus />
-            打开文件
+            <span className="@max-[1350px]:sr-only">打开文件</span>
           </Button>
         </Tip>
         <Tip label="打开文件夹">
           <Button variant="ghost" size="sm" onClick={() => void openFolderDialog()}>
             <FolderOpen />
-            打开文件夹
+            <span className="@max-[1350px]:sr-only">打开文件夹</span>
           </Button>
         </Tip>
         <ResetButton />
@@ -168,23 +169,23 @@ export function Toolbar() {
         <Tip label="撤销" shortcut="Ctrl+Z">
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="sm"
             disabled={!page || page.ops.length === 0}
             onClick={() => doc && undo(doc.id)}
-            aria-label="撤销"
           >
             <Undo2 />
+            撤销
           </Button>
         </Tip>
         <Tip label="重做" shortcut="Ctrl+Shift+Z">
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="sm"
             disabled={!page || page.redo.length === 0}
             onClick={() => doc && redo(doc.id)}
-            aria-label="重做"
           >
             <Redo2 />
+            重做
           </Button>
         </Tip>
       </div>
