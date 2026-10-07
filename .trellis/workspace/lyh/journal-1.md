@@ -61,3 +61,34 @@ Finished 10-06-pdf-mosaic: pdf.js page rendering at 200 DPI with LRU 3, status-b
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: Redesign the application icon
+<!-- trellis-session: v=2 fp=b6f0051b03be4648 -->
+
+**Date**: 2026-10-07
+**Task**: Redesign the application icon
+**Branch**: `main`
+
+### Summary
+
+Replaced the Tauri template icon with a user-selected mosaic tile mark. The icon set is in src-tauri/icons. The window icon updates on the next tauri dev or tauri build.
+
+### Main Changes
+
+- Generated three icon candidates and installed candidate 1 through tauri icon.
+- Kept the desktop icon set, including the new 64x64.png, and removed the generated android and ios folders.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0379f84` | feat: replace the template icon with a mosaic mark |
+
+### Testing
+
+- [OK] 32px PNG and the 16px ICO frame still show three tiles. tauri.conf.json is unchanged.
+
+### Status
+
+[OK] **Completed**
