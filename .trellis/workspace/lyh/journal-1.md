@@ -124,3 +124,33 @@ Replaced the settings dialog with a full-window page that has a close button. Un
 ### Status
 
 [OK] **Completed**
+
+
+## Session 5: README screenshots and user guide
+<!-- trellis-session: v=2 fp=781cefbe1359efce -->
+
+**Date**: 2026-10-08
+**Task**: README screenshots and user guide
+**Branch**: `dev`
+
+### Summary
+
+Added real screenshots of the empty window, settings page, and about dialog, plus a short user guide.
+
+### Main Changes
+
+- README feature section now shows the three screenshots and links to docs/guide.md.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `63f9fe1` | docs: 用真实截图介绍主窗口、设置和关于 |
+
+### Testing
+
+- [OK] Compared the screenshots with the desktop window. Chinese punctuation check passed.
+
+### Status
+
+[OK] **Completed**
