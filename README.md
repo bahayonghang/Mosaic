@@ -6,18 +6,19 @@ Mosaic 是一个 Windows 桌面工具，用来给图片和 PDF 打马赛克。�
 
 ## 功能
 
-- 打开文件或文件夹，也可以把文件、PDF、文件夹拖进窗口
-- 打开的文件夹在侧边栏按原始目录结构显示，子文件夹可以折叠
-- 矩形选区打码，或用画笔涂抹打码
-- 调节马赛克颗粒大小；画笔模式下可调节笔刷大小
-- 撤销、重做、缩放、适应窗口
-- PDF 按页编辑和导出
-- 导出到原文件旁边、另存为，或一次导出全部已编辑的文件
-- 导出的文件名在原文件名后加后缀，默认 `_打码版`（例如 `证书_打码版.jpg`），可以在「设置」中修改
-- 「重置」关闭全部文件，回到初始界面，不用重启程序
-- 「设置」菜单里有设置和「关于 Mosaic」（版本号、项目地址）
+![没有打开文件时的主窗口](docs/images/window.png)
 
-支持的格式：JPG、JPEG、PNG、WebP、BMP、PDF。
+没有打开文件时，主窗口是工具栏、空状态和状态栏。图片、PDF 或文件夹可以拖进窗口，也可以点「打开文件」和「打开文件夹」。
+
+![设置页](docs/images/settings.png)
+
+工具栏右侧的齿轮菜单里，「设置…」打开设置页。导出的新文件名加在原文件名后面，默认后缀是 `_打码版`。
+
+![关于 Mosaic](docs/images/about.png)
+
+「关于 Mosaic」显示版本和项目地址。
+
+这几处界面的说明在 [使用说明](docs/guide.md)。
 
 ## 快捷键
 
@@ -48,7 +49,7 @@ pnpm install
 just dev
 ```
 
-`just dev` 先启动 Vite（http://localhost:5180），再打开桌面窗口。本机 Windows 通过 Hyper-V 保留了 TCP 1190–2621，Tauri 模板默认的 1420 无法绑定，所以开发端口固定为 5180。改端口前先看保留范围：
+`just dev` 先启动 Vite（http://localhost:5180），再打开桌面窗口。本机 Windows 通过 Hyper-V 保留了 TCP 1190-2621，Tauri 模板默认的 1420 无法绑定，所以开发端口固定为 5180。改端口前先看保留范围：
 
 ```text
 netsh interface ipv4 show excludedportrange protocol=tcp
